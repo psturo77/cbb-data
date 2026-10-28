@@ -1,0 +1,35 @@
+target,type,col1,col2,col3,cap,coef,se,label
+margin,diff,Net,,,,0.7374221219424333,0.010725037361736911,Net rating difference (home - away)
+margin,home,HCA,,,,2.811106461010906,0.3713180562120556,Home court (0 if neutral)
+margin,const,,,,,0.5481494977081938,0.3507175303265814,Intercept
+margin,none,,,,,0.0,,
+margin,none,,,,,0.0,,
+margin,none,,,,,0.0,,
+margin,none,,,,,0.0,,
+margin,none,,,,,0.0,,
+margin,none,,,,,0.0,,
+margin,none,,,,,0.0,,
+total,paceadj,AdjT,AdjO,AdjD,,1.3091535952518174,0.05161562003418319,Pace-adjusted expected points
+total,avg,AdjT,,,,1.1594760617315811,0.16431811425294293,Average tempo
+total,const,,,,,-127.10191300088681,7.41038510294362,Intercept
+total,none,,,,,0.0,,
+total,none,,,,,0.0,,
+total,none,,,,,0.0,,
+total,none,,,,,0.0,,
+total,none,,,,,0.0,,
+total,none,,,,,0.0,,
+total,none,,,,,0.0,,
+param,,,,,,11.611791065812639,,sigma_margin
+param,,,,,,16.968451252903204,,sigma_total
+stat,,,,,,9524.0,,n_games
+stat,,,,,,46118.0,,data_through_serial
+stat,,,,,,1.0,,spread_model_is_efficiency
+stat,,,,,,1.0,,total_model_is_efficiency
+stat,,,,,,0.33183332966350054,,spread_adjr2_efficiency
+stat,,,,,,0.3140010284519582,,spread_adjr2_box
+stat,,,,,,0.19714582743975306,,total_adjr2_efficiency
+stat,,,,,,0.19018196555422673,,total_adjr2_box
+stat,,,,,,11.611791065812639,,spread_rmse_efficiency
+stat,,,,,,11.765720871576635,,spread_rmse_box
+stat,,,,,,16.968451252903204,,total_rmse_efficiency
+stat,,,,,,17.041883527973674,,total_rmse_box
