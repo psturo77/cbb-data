@@ -1,17 +1,17 @@
 target,type,col1,col2,col3,cap,coef,se,label
-margin,diff,Net,,,,0.7374221219424333,0.010725037361736911,Net rating difference (home - away)
-margin,home,HCA,,,,2.811106461010906,0.3713180562120556,Home court (0 if neutral)
-margin,const,,,,,0.5481494977081938,0.3507175303265814,Intercept
+margin,diff,Net,,,,0.9446762227231207,0.008706953699956565,"Team rating difference (points, home - away)"
+margin,home,HCA,,,,0.7394813609025038,0.052803315239069025,Home team's home-court edge (0 if neutral)
+margin,rest_diff,LastGameSerial,,,2,1.6855675658108098,0.4941803442322738,Rest days difference (capped at 2)
+margin,const,,,,,0.4573094657420765,0.18513593776916468,Intercept
 margin,none,,,,,0.0,,
 margin,none,,,,,0.0,,
 margin,none,,,,,0.0,,
 margin,none,,,,,0.0,,
 margin,none,,,,,0.0,,
 margin,none,,,,,0.0,,
-margin,none,,,,,0.0,,
-total,paceadj,AdjT,AdjO,AdjD,,1.3091535952518174,0.05161562003418319,Pace-adjusted expected points
-total,avg,AdjT,,,,1.1594760617315811,0.16431811425294293,Average tempo
-total,const,,,,,-127.10191300088681,7.41038510294362,Intercept
+total,paceadj,AdjT,AdjO,AdjD,,1.0768806222603233,0.023263482268160128,Pace-adjusted expected points
+total,avg,AdjT,,,,1.4361905198382323,0.08058024680050604,Average tempo
+total,const,,,,,-110.69280416339359,4.156395739723227,Intercept
 total,none,,,,,0.0,,
 total,none,,,,,0.0,,
 total,none,,,,,0.0,,
@@ -19,17 +19,17 @@ total,none,,,,,0.0,,
 total,none,,,,,0.0,,
 total,none,,,,,0.0,,
 total,none,,,,,0.0,,
-param,,,,,,11.611791065812639,,sigma_margin
-param,,,,,,16.968451252903204,,sigma_total
-stat,,,,,,9524.0,,n_games
+param,,,,,,11.236712418374895,,sigma_margin
+param,,,,,,16.7357111614457,,sigma_total
+stat,,,,,,23479.0,,n_games
 stat,,,,,,46118.0,,data_through_serial
 stat,,,,,,1.0,,spread_model_is_efficiency
 stat,,,,,,1.0,,total_model_is_efficiency
-stat,,,,,,0.33183332966350054,,spread_adjr2_efficiency
-stat,,,,,,0.3140010284519582,,spread_adjr2_box
-stat,,,,,,0.19714582743975306,,total_adjr2_efficiency
-stat,,,,,,0.19018196555422673,,total_adjr2_box
-stat,,,,,,11.611791065812639,,spread_rmse_efficiency
-stat,,,,,,11.765720871576635,,spread_rmse_box
-stat,,,,,,16.968451252903204,,total_rmse_efficiency
-stat,,,,,,17.041883527973674,,total_rmse_box
+stat,,,,,,0.3483917386377706,,spread_adjr2_efficiency
+stat,,,,,,0.29750923479668845,,spread_adjr2_box
+stat,,,,,,0.21610121216675238,,total_adjr2_efficiency
+stat,,,,,,0.19734673676559644,,total_adjr2_box
+stat,,,,,,11.236712418374895,,spread_rmse_efficiency
+stat,,,,,,11.667190389613724,,spread_rmse_box
+stat,,,,,,16.7357111614457,,total_rmse_efficiency
+stat,,,,,,16.934725570716285,,total_rmse_box
