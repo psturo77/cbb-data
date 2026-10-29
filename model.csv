@@ -1,9 +1,9 @@
 target,type,col1,col2,col3,cap,coef,se,label
-margin,diff,Net,,,,0.9374717555536273,0.008723367737600454,"Team rating difference (points, home - away)"
-margin,home,HCA,,,,0.7419936635461664,0.05270366587246078,Home team's home-court edge (0 if neutral)
-margin,rest_diff,LastGameSerial,,,2,1.6650734302717016,0.49324624829933167,Rest days difference (capped at 2)
-margin,const,,,,,0.46227835905740433,0.1847849703423901,Intercept
-margin,diff,Miss,,,,-0.10878213267013288,0.011438301435050159,Missing regulars (value of players who sat the last game)
+margin,diff,Net,,,,0.9315357661641577,0.008554587311451714,"Team rating difference (points, home - away)"
+margin,home,HCA,,,,0.7291297339068377,0.05396993204821543,Home team's home-court edge (0 if neutral)
+margin,rest_diff,LastGameSerial,,,2,1.6388065168581443,0.4915864601135956,Rest days difference (capped at 2)
+margin,const,,,,,0.5551780727182198,0.18342867911023247,Intercept
+margin,diff,Miss,,,,-0.11010755436925311,0.011407062921424682,Missing regulars (value of players who sat the last game)
 margin,diff,MktAdj,,,,1.0,,"Market correction (team difference, from closing lines)"
 margin,home,MktHome,,,,1.0,,Market correction to home court
 margin,none,,,,,0.0,,
@@ -19,17 +19,17 @@ total,none,,,,,0.0,,
 total,none,,,,,0.0,,
 total,none,,,,,0.0,,
 total,none,,,,,0.0,,
-param,,,,,,11.215365834072202,,sigma_margin
+param,,,,,,11.18647107177258,,sigma_margin
 param,,,,,,16.7357111614457,,sigma_total
 stat,,,,,,23479.0,,n_games
 stat,,,,,,46118.0,,data_through_serial
 stat,,,,,,1.0,,spread_model_is_efficiency
 stat,,,,,,1.0,,total_model_is_efficiency
-stat,,,,,,0.3508651308538454,,spread_adjr2_efficiency
+stat,,,,,,0.35420562570628533,,spread_adjr2_efficiency
 stat,,,,,,0.29750923479668845,,spread_adjr2_box
 stat,,,,,,0.21610121216675238,,total_adjr2_efficiency
 stat,,,,,,0.19734673676559644,,total_adjr2_box
-stat,,,,,,11.215365834072202,,spread_rmse_efficiency
+stat,,,,,,11.18647107177258,,spread_rmse_efficiency
 stat,,,,,,11.667190389613724,,spread_rmse_box
 stat,,,,,,16.7357111614457,,total_rmse_efficiency
 stat,,,,,,16.934725570716285,,total_rmse_box
