@@ -12,8 +12,8 @@ margin,none,,,,,0.0,,
 total,paceadj,AdjT,AdjO,AdjD,,1.0768806222603233,0.023263482268160128,Pace-adjusted expected points
 total,avg,AdjT,,,,1.4361905198382323,0.08058024680050604,Average tempo
 total,const,,,,,-110.69280416339359,4.156395739723227,Intercept
-total,none,,,,,0.0,,
-total,none,,,,,0.0,,
+total,sum,TotAdj,,,,1.0,,"Market correction (both teams, from closing totals)"
+total,avg,TotShift,,,,1.0,,Market correction to the league-wide total
 total,none,,,,,0.0,,
 total,none,,,,,0.0,,
 total,none,,,,,0.0,,
@@ -34,3 +34,4 @@ stat,,,,,,11.667190389613724,,spread_rmse_box
 stat,,,,,,16.7357111614457,,total_rmse_efficiency
 stat,,,,,,16.934725570716285,,total_rmse_box
 stat,,,,,,0.0,,market_correction_games
+stat,,,,,,0.0,,total_correction_games
