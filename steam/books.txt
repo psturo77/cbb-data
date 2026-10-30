@@ -1,0 +1,11 @@
+# Sportsbooks the steam checker watches (The Odds API keys), up to 9. Pinnacle is always added as the reference.
+# Put the books you can bet at first; edit this file on GitHub any time (pencil icon), no code changes needed.
+draftkings
+fanduel
+betmgm
+williamhill_us
+espnbet
+fanatics
+betrivers
+hardrockbet
+ballybet

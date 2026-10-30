@@ -1,0 +1,48 @@
+name: CBB steam checker
+# Every 5 minutes on weekday evenings and every 10 minutes on weekend afternoons/evenings (Nov-Apr), check for prices
+# at your sportsbooks that beat Pinnacle's no-vig line, and push them to your phone with ntfy.
+# Times are UTC: 22:00-02:59 UTC = 5:00-9:59 PM Eastern (standard time). GitHub may run scheduled jobs a few minutes late.
+on:
+  schedule:
+    - cron: "*/5 22,23,0,1,2 * 11,12,1,2,3,4 *"
+    - cron: "*/10 16-21 * 11,12,1,2,3,4 6,0"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print alerts instead of sending them"
+        type: boolean
+        default: false
+
+concurrency:
+  group: steam
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: steam
+      - name: Restore alert history
+        uses: actions/cache/restore@v4
+        with:
+          path: .steam_state.json
+          key: steam-state-${{ github.run_id }}
+          restore-keys: steam-state-
+      - name: Check prices
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+        run: python3 steam/steam.py
+      - name: Save alert history
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .steam_state.json
+          key: steam-state-${{ github.run_id }}
