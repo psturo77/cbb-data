@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   check:
@@ -40,6 +40,14 @@ jobs:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
         run: python3 steam/steam.py
+      - name: Save the alert log to the repo
+        if: success() && inputs.dry_run != true
+        run: |
+          git config user.name "cbb-steam-bot"; git config user.email "actions@users.noreply.github.com"
+          git add steam/log.csv 2>/dev/null || exit 0
+          git diff --cached --quiet && exit 0
+          git commit -m "Steam alerts log"
+          for i in 1 2 3; do git pull --rebase -q origin main && git push -q origin HEAD:main && break; sleep 5; done
       - name: Save alert history
         if: always()
         uses: actions/cache/save@v5

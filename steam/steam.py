@@ -13,13 +13,16 @@ Environment:
 Cost: 1 free events call; odds only if a game tips within WINDOW_H: markets spreads,totals x 1 bookmaker group
 (Pinnacle + up to 9 books) = 2 credits.
 """
-import os, sys, json, time, math, urllib.request, urllib.parse, urllib.error
+import os, sys, csv, json, time, math, urllib.request, urllib.parse, urllib.error
 from datetime import datetime, timezone, timedelta
 from statistics import NormalDist
 
 API = "https://api.the-odds-api.com/v4/sports/basketball_ncaab"
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATE = os.environ.get("STATE_FILE", ".steam_state.json")
+LOG = os.environ.get("LOG_FILE", os.path.join(HERE, "log.csv"))     # every alert, plus Pinnacle's last pre-tip line (for grading)
+LOGF = ["alerted", "event_id", "commence", "home", "away", "market", "side", "book", "point", "price", "pin_point", "pin_price",
+        "edge", "pin_close_point", "pin_close_price", "pin_close_at"]
 KEY = os.environ.get("ODDS_API_KEY", "")
 TOPIC = os.environ.get("NTFY_TOPIC", "")
 MIN_EV = float(os.environ.get("MIN_EV", "0.02"))
@@ -86,6 +89,8 @@ else:
         sys.exit(f"odds call failed: HTTP {e.code}")
 
 # ---- 3. every price at your books vs Pinnacle's no-vig chance at the same line
+log = list(csv.DictReader(open(LOG))) if os.path.exists(LOG) else []
+log_changed = False
 hits = []
 for ev in odds:
     bm = {b["key"]: b for b in ev.get("bookmakers", [])}
@@ -116,9 +121,26 @@ for ev in odds:
                 k = f"{ev['id']}|{m['key']}|{o['name']}|{key}|{o['point']}|{o['price']}"
                 if k in state: continue
                 state[k] = now.isoformat()
+                log.append(dict(alerted=now.strftime("%Y-%m-%dT%H:%M:%SZ"), event_id=ev["id"], commence=ev["commence_time"], home=ev["home_team"],
+                                away=ev["away_team"], market=m["key"], side=o["name"], book=key, point=o["point"], price=o["price"],
+                                pin_point=po["point"], pin_price=po["price"], edge=round(ev_, 4)))
+                log_changed = True
                 tip = ts(ev["commence_time"]).astimezone(timezone(timedelta(hours=-5)))   # US Eastern (standard time, Nov-Mar)
                 hits.append((ev_, f"{line} {price(o['price'])} at {b['title']} - edge {ev_:+.1%} vs Pinnacle ({pin_line})"
                                    f" - {ev['away_team']} at {ev['home_team']}, {tip.strftime('%-I:%M %p')} ET"))
+# Pinnacle's latest line for every logged alert whose game hasn't tipped yet: the last one before tip-off = its close
+for ev in odds:
+    pin = next((b for b in ev.get("bookmakers", []) if b["key"] == "pinnacle"), None)
+    if not pin or ts(ev["commence_time"]) <= now: continue
+    pmk = {m["key"]: {o["name"]: o for o in m["outcomes"]} for m in pin.get("markets", [])}
+    for r in log:
+        if r["event_id"] != ev["id"]: continue
+        po = (pmk.get(r["market"]) or {}).get(r["side"])
+        if po and po.get("point") is not None:
+            r.update(pin_close_point=po["point"], pin_close_price=po["price"], pin_close_at=pin["last_update"]); log_changed = True
+if log_changed:
+    with open(LOG, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=LOGF); w.writeheader(); [w.writerow({k: r.get(k, "") for k in LOGF}) for r in log]
 hits.sort(reverse=True)
 if hits:
     notify(f"CBB: {len(hits)} price{'s' if len(hits) > 1 else ''} beating Pinnacle", "\n".join(h for _, h in hits[:8]))
