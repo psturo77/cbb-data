@@ -4,6 +4,7 @@ import pandas as pd
 # ---- the board's constants (keep in step with cbb-board.html)
 W = dict(open=0.5, close=0.15, openEarly=0.15, closeEarly=0.0, tot=0.25, totEarly=0.2)
 CAP, CAP_TOT, MIN_EV = 6.0, 10.0, 0.02
+TOT_STAKE = 0.5    # totals staked at half (same as the board): small, over-heavy test sample; back to 1 if live CLV holds up
 KELLY = 0.125      # stake = Kelly fraction (board default 'Cautious' 1/8, cap 1.5u; 'Standard' 1/4, cap 3u)
 Phi = lambda x: 0.5 * (1 + erf(x / sqrt(2)))
 payout = lambda p: p / 100 if p > 0 else 100 / -p
@@ -66,7 +67,7 @@ def bets_for(g, o, sdm=11.2, sdt=16.7, books=None):
         for L, P, i in opts("un", [o.get("tot"), o.get("up") or -110]):
             w_, l_ = chances(-ft, -L, sdt); out.append(dict(market="total", side="under", line=L, price=P, book=bk(i), p=w_, ev=w_ * payout(P) - l_))
     for b in out:
-        b["units"] = max(0.0, min(12 * KELLY, 100 * KELLY * b["ev"] / payout(b["price"])))
+        b["units"] = (TOT_STAKE if b["market"] == "total" else 1.0) * max(0.0, min(12 * KELLY, 100 * KELLY * b["ev"] / payout(b["price"])))
         if o.get("anchor"):        # a book 1+ pt better for you than Pinnacle
             v = (b["line"] - o["sp"] if b["side"] == "home" else b["line"] + o["sp"]) if b["market"] == "spread" else \
                 (o["tot"] - b["line"] if b["side"] == "over" else b["line"] - o["tot"]) if b["market"] == "total" else None
