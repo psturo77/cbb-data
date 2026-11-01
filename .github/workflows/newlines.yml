@@ -1,0 +1,55 @@
+name: CBB new-line alerts
+# Every 30 minutes, 6 AM - 1 AM Eastern (Nov-Apr): when DraftKings or FanDuel first posts a spread or total on a game the
+# model has a number for, price it with the board's math and push it to your phone if it clears the board's bar.
+# Odds API cost: the events list is free; 2 credits only when some game still has an unseen line (at most ~80 a day).
+on:
+  schedule:
+    - cron: "7,37 0-5,10-23 * 11,12,1,2,3,4 *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print alerts instead of sending them"
+        type: boolean
+        default: false
+
+concurrency:
+  group: newlines
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: steam
+      - name: Restore seen-lines history
+        uses: actions/cache/restore@v5
+        with:
+          path: .newlines_state.json
+          key: newlines-state-${{ github.run_id }}
+          restore-keys: newlines-state-
+      - name: Check for new lines
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+        run: python3 steam/newlines.py
+      - name: Save the alert log to the repo
+        if: success() && inputs.dry_run != true
+        run: |
+          git config user.name "cbb-steam-bot"; git config user.email "actions@users.noreply.github.com"
+          git add steam/newlines.csv 2>/dev/null || exit 0
+          git diff --cached --quiet && exit 0
+          git commit -m "New-line alerts log"
+          for i in 1 2 3; do git pull --rebase -q origin main && git push -q origin HEAD:main && break; sleep 5; done
+      - name: Save seen-lines history
+        if: always()
+        uses: actions/cache/save@v5
+        with:
+          path: .newlines_state.json
+          key: newlines-state-${{ github.run_id }}
