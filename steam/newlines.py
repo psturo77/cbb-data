@@ -6,7 +6,7 @@ Run by .github/workflows/newlines.yml every 30 minutes (Nov-Apr). Standard libra
 Inputs (committed daily by the data refresh task):
   steam/model.json    {updated, teammap, games: {espn_game_id: {start, home, away, neutral, early, pm, pt}}} for the next few days
   steam/boardmath.py  the board's math
-Environment: ODDS_API_KEY, NTFY_TOPIC (GitHub secrets); BOOKS (default draftkings,fanduel); MIN_EV (default 0.03);
+Environment: ODDS_API_KEY, NTFY_TOPIC (GitHub secrets); BOOKS (default: steam/books.txt, shared with the steam checker); MIN_EV (default 0.03);
   AHEAD_H (only games tipping within this many hours, default 40); MIN_CREDITS (default 1500); DRY_RUN=1;
   ODDS_FILE / EVENTS_FILE = saved json to test without the API; STATE_FILE (default .newlines_state.json).
 Cost: the events list is free; the odds call (Pinnacle + your books, spreads + totals = 2 credits) is made only when some
@@ -26,7 +26,8 @@ from boardmath import bets_for, min_for, timing
 
 API = "https://api.the-odds-api.com/v4/sports/basketball_ncaab"
 KEY, TOPIC = os.environ.get("ODDS_API_KEY", ""), os.environ.get("NTFY_TOPIC", "")
-BOOKS = [b.strip() for b in os.environ.get("BOOKS", "draftkings,fanduel").split(",") if b.strip()]
+_bk = os.environ.get("BOOKS") or open(os.path.join(HERE, "books.txt")).read()      # same list as the steam checker
+BOOKS = [b.strip() for b in _bk.replace("\n", ",").split(",") if b.strip() and not b.strip().startswith("#") and b.strip() != "pinnacle"][:9]
 MIN_EV = float(os.environ.get("MIN_EV", "0.03")); AHEAD_H = float(os.environ.get("AHEAD_H", "40"))
 MIN_CREDITS = int(os.environ.get("MIN_CREDITS", "1500")); DRY = os.environ.get("DRY_RUN") == "1"
 STATE = os.environ.get("STATE_FILE", ".newlines_state.json"); LOG = os.path.join(HERE, "newlines.csv")
