@@ -72,12 +72,26 @@ def bets_for(g, o, sdm=11.2, sdt=16.7, books=None):
             v = (b["line"] - o["sp"] if b["side"] == "home" else b["line"] + o["sp"]) if b["market"] == "spread" else \
                 (o["tot"] - b["line"] if b["side"] == "over" else b["line"] - o["tot"]) if b["market"] == "total" else None
             if v is not None and v >= 1 - 1e-9: b["off"] = v
+    # a book 2.5+ pts better than the market on a spread (4+ on a total) is almost always stale or bad data: not a bet (same as the board)
+    def off_by(b):
+        if b["market"] == "spread" and o.get("sp") is not None: return b["line"] - o["sp"] if b["side"] == "home" else b["line"] + o["sp"]
+        if b["market"] == "total" and o.get("tot") is not None: return o["tot"] - b["line"] if b["side"] == "over" else b["line"] - o["tot"]
+        return None
+    out = [b for b in out if (off_by(b) is None) or off_by(b) <= (SUS_TOT if b["market"] == "total" else SUS_SP)]
     return sorted(out, key=lambda b: -b["ev"])
 
+SUS_SP, SUS_TOT = 2.5, 4.0
 
 PRIME_MOVE = 2.5
+def wild_gap(g, b, o):
+    """early season: the model is more than 6 pts off the market's spread (10 on a total) - no PRIME then (same as the board)"""
+    if not g.get("early"): return False
+    if b["market"] == "total": return g.get("pt") is not None and o.get("tot") is not None and abs(g["pt"] - o["tot"]) > 10
+    return g.get("pm") is not None and o.get("sp") is not None and abs(g["pm"] + o["sp"]) > 6
 def is_prime(g, b, o):
-    """PRIME: line expected to move 2.5+ pts against this price by tip-off (same as the board) - the bets ahead of the market"""
+    """PRIME: line expected to move 2.5+ pts against this price by tip-off (same as the board) - the bets ahead of the market.
+    Not in early season when the model is far off the market (wild_gap)."""
+    if wild_gap(g, b, o): return False
     tm = timing(g, b, o); return tm is not None and tm >= PRIME_MOVE
 
 def caution(g, b, o):
