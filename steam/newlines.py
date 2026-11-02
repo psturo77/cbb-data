@@ -22,7 +22,7 @@ try:
 except ImportError:
     import types
     _pd = types.ModuleType("pandas"); _pd.Timestamp = lambda s: datetime.fromisoformat(str(s).replace("Z", "+00:00")); sys.modules["pandas"] = _pd
-from boardmath import bets_for, min_for, timing
+from boardmath import bets_for, min_for, timing, calibrate_all, caution, wild_gap
 
 API = "https://api.the-odds-api.com/v4/sports/basketball_ncaab"
 KEY, TOPIC = os.environ.get("ODDS_API_KEY", ""), os.environ.get("NTFY_TOPIC", "")
@@ -93,6 +93,19 @@ else:
 # ---- 3. first sighting of a book's line -> price it like the board does at that moment
 fmt = lambda x: "PK" if abs(x) < 0.05 else (f"+{x:g}" if x > 0 else f"{x:g}")
 pr = lambda p: f"+{p}" if p > 0 else f"{p}"
+# early-season market calibration (same as the board): market line per game = Pinnacle, else the first of your books
+mkt = {}
+for ev in odds:
+    if ev["id"] not in ours: continue
+    gid, flip = ours[ev["id"]]; hn = ev["away_team"] if flip else ev["home_team"]
+    bms = sorted(ev.get("bookmakers", []), key=lambda b: b["key"] != "pinnacle"); r = {}
+    for b in bms:
+        for m in b.get("markets", []):
+            oc = {o["name"]: o for o in m["outcomes"]}
+            if m["key"] == "spreads" and "sp" not in r and oc.get(hn, {}).get("point") is not None: r["sp"] = oc[hn]["point"]
+            if m["key"] == "totals" and "tot" not in r and oc.get("Over", {}).get("point") is not None: r["tot"] = oc["Over"]["point"]
+    mkt[gid] = r
+M["games"], CAL = calibrate_all(M["games"], mkt)
 log = list(csv.DictReader(open(LOG))) if os.path.exists(LOG) else []
 hits = []
 for ev in odds:
@@ -126,6 +139,8 @@ for ev in odds:
             bets = [b for b in bets_for(g, o) if b["market"] == ("spread" if key == "spreads" else "total")]
             b = next((b for b in bets if b["ev"] >= min_for(g, b, MIN_EV)), None)
             if not b: continue
+            ref = dict(o, sp=mkt.get(gid, {}).get("sp", o.get("sp")), tot=mkt.get(gid, {}).get("tot", o.get("tot")))
+            if caution(g, b, ref) or wild_gap(g, b, ref): continue     # same as the board: no push for CAUTION or far-off-market early bets
             tmv = timing(g, b, o)
             nm = (g["home"] if b["side"] == "home" else g["away"]) if b["market"] == "spread" else b["side"].title()
             txt = f"{nm} {fmt(b['line']) if b['market'] == 'spread' else format(b['line'], 'g')} {pr(b['price'])}"

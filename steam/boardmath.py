@@ -82,6 +82,29 @@ def bets_for(g, o, sdm=11.2, sdt=16.7, books=None):
 
 SUS_SP, SUS_TOT = 2.5, 4.0
 
+CAL_MIN = 20
+def market_cal(games, odds_games, min_n=CAL_MIN):
+    """Early-season market calibration (same as the board's recal): the median gap between the model and the market over
+    early-season games with odds - spread (home margin, non-neutral games) and total. 0 when fewer than min_n games."""
+    sp, tt = [], []
+    for gid, g in games.items():
+        o = odds_games.get(gid)
+        if not o or not g.get("early") or g.get("status") != "pre": continue
+        if g.get("pm") is not None and o.get("sp") is not None and not g.get("neutral"): sp.append(g["pm"] + o["sp"])
+        if g.get("pt") is not None and o.get("tot") is not None: tt.append(g["pt"] - o["tot"])
+    med = lambda a: 0.0 if len(a) < min_n else round(float(pd.Series(a).median()), 2)
+    return dict(sp=med(sp), tot=med(tt), n=min(len(sp), len(tt)))
+
+def calibrate_all(games, odds_games):
+    """games with the early-season market calibration applied (pm, pt), plus the calibration itself"""
+    cal = market_cal(games, odds_games); out = {}
+    for gid, g in games.items():
+        if not g.get("early") or g.get("pm") is None: out[gid] = g; continue
+        out[gid] = dict(g, pm=g["pm"] if g.get("neutral") else g["pm"] - cal["sp"], pt=None if g.get("pt") is None else g["pt"] - cal["tot"],
+                        cal=dict(sp=0.0 if g.get("neutral") else cal["sp"], tot=cal["tot"]))
+    return out, cal
+
+
 PRIME_MOVE = 2.5
 def wild_gap(g, b, o):
     """early season: the model is more than 6 pts off the market's spread (10 on a total) - no PRIME then (same as the board)"""
