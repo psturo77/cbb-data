@@ -1,0 +1,64 @@
+name: CBB daily data
+# Every afternoon (Nov-Apr), rebuild the model's data files and commit them to this repo: the Excel workbook's files
+# (games, teams, model, meta, lines), the paper-trading log, Haslametrics snapshots, and the new-line checker's
+# model numbers (steam/model.json). Runs here, not in a Claude task, because GitHub Actions can commit to this repo
+# on its own (a scheduled Claude run can't). The Claude daily refresh still writes the board.
+# 19:20 UTC = 2:20 PM Eastern (standard time); a few minutes late is normal for scheduled jobs.
+on:
+  schedule:
+    - cron: "20 19 * 11,12,1,2,3,4 *"
+  workflow_dispatch:
+  push:                      # also when the pipeline itself changes, so a fix takes effect the same day
+    branches: [main]
+    paths: ["pipeline/**", ".github/workflows/daily-data.yml"]
+
+concurrency:
+  group: daily-data
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Python packages
+        run: pip install -q pandas numpy scipy pyarrow
+      - name: Download hoopR data (sportsdataverse/hoopR-mbb-data, seasons 2021+)
+        run: |
+          GIT_LFS_SKIP_SMUDGE=1 git clone -q --depth 1 --filter=blob:none --no-checkout https://github.com/sportsdataverse/hoopR-mbb-data "$RUNNER_TEMP/hoopr"
+          cd "$RUNNER_TEMP/hoopr"
+          P=$(git ls-tree -r --name-only HEAD | grep -E '^mbb/(team_box|schedules|player_box|rosters)/parquet/(team_box|mbb_schedule|player_box|rosters)_20(2[1-9]|[3-9][0-9])\.parquet$')
+          git checkout -q HEAD -- $P
+      - name: Build
+        id: build
+        run: |
+          set -e
+          H="$RUNNER_TEMP/hoopr/mbb"; D="$RUNNER_TEMP/dash"; mkdir -p "$D"
+          G0=$(wc -l < games.csv); L0=$(wc -l < lines.csv); T0=$(python3 -c "import json;print(json.load(open('meta.json')).get('data_through',''))")
+          python3 pipeline/espn_schedule.py "$H" 14 28
+          python3 pipeline/lines.py "$H" . || git checkout -- lines.csv
+          python3 pipeline/bpi.py "$H" . || true
+          python3 pipeline/hasla.py . || true
+          python3 pipeline/process.py "$H" .
+          python3 pipeline/check.py . "$G0" "$L0" "$T0"
+          python3 pipeline/dashboard.py "$H" . "$D"
+          python3 pipeline/upcoming.py "$H" "$D/board_espn.json" || echo "upcoming.py failed - paper trading skipped"
+          if [ -f "$D/board_espn.json" ]; then python3 pipeline/paper.py "$H" . "$D" || git checkout -- paper.csv 2>/dev/null || true; fi
+          python3 pipeline/export_model.py "$D" steam/teammap.json . 3
+          cp pipeline/boardmath.py steam/boardmath.py
+      - name: Commit
+        if: success()
+        run: |
+          git config user.name "cbb-data-bot"; git config user.email "actions@users.noreply.github.com"
+          git add games.csv teams.csv model.csv meta.json lines.csv steam/model.json steam/boardmath.py
+          git add paper.csv hasla/*.csv bpi_preseason_*.csv 2>/dev/null || true
+          git diff --cached --quiet && { echo "nothing to commit"; exit 0; }
+          git commit -q -m "Data through $(python3 -c "import json;print(json.load(open('meta.json'))['data_through'])")"
+          for i in 1 2 3; do git pull --rebase -q origin main && git push -q origin HEAD:main && break; sleep 10; done
