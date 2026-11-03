@@ -22,15 +22,15 @@ alerted,event_id,commence,home,away,market,side,book,point,price,pin_point,pin_p
 2026-11-02T22:31:49Z,90dfb882fa267e2f94e0f7477352de5a,2026-11-03T01:00:00Z,South Alabama Jaguars,Ohio Bobcats,spreads,Ohio Bobcats,draftkings,1.5,-130,-1.0,-103,0.0216,-1.0,-103,2026-11-03T00:23:02Z
 2026-11-02T22:31:49Z,90dfb882fa267e2f94e0f7477352de5a,2026-11-03T01:00:00Z,South Alabama Jaguars,Ohio Bobcats,spreads,Ohio Bobcats,betmgm,1.5,-120,-1.0,-103,0.0586,-1.0,-103,2026-11-03T00:23:02Z
 2026-11-02T22:31:49Z,90dfb882fa267e2f94e0f7477352de5a,2026-11-03T01:00:00Z,South Alabama Jaguars,Ohio Bobcats,spreads,Ohio Bobcats,fanduel,1.5,-120,-1.0,-103,0.0586,-1.0,-103,2026-11-03T00:23:02Z
-2026-11-02T22:31:49Z,8bca11339ea7c2bf3b41e79b63a9a5a6,2026-11-03T01:30:00Z,Florida St Seminoles,Florida A&M Rattlers,spreads,Florida A&M Rattlers,draftkings,28.5,-108,28.0,-118,0.0283,28.0,-104,2026-11-03T00:23:02Z
-2026-11-02T22:31:49Z,8bca11339ea7c2bf3b41e79b63a9a5a6,2026-11-03T01:30:00Z,Florida St Seminoles,Florida A&M Rattlers,spreads,Florida A&M Rattlers,fanduel,28.5,-108,28.0,-118,0.0283,28.0,-104,2026-11-03T00:23:02Z
-2026-11-02T22:31:49Z,7d070404931fc1bc875550510c6308fc,2026-11-03T02:00:00Z,Houston Cougars,La Salle Explorers,totals,Over,williamhill_us,133.0,-110,134.5,-117,0.0408,134.5,-117,2026-11-03T00:23:02Z
-2026-11-02T22:31:49Z,3d7267336c139cfb6aa2c4ce4b77133b,2026-11-03T02:30:00Z,Oregon St Beavers,Weber State Wildcats,totals,Under,williamhill_us,161.5,-110,159.5,-104,0.0208,160.5,-108,2026-11-03T00:23:02Z
-2026-11-02T22:31:49Z,3d7267336c139cfb6aa2c4ce4b77133b,2026-11-03T02:30:00Z,Oregon St Beavers,Weber State Wildcats,totals,Under,fanduel,161.5,-110,159.5,-104,0.0208,160.5,-108,2026-11-03T00:23:02Z
+2026-11-02T22:31:49Z,8bca11339ea7c2bf3b41e79b63a9a5a6,2026-11-03T01:30:00Z,Florida St Seminoles,Florida A&M Rattlers,spreads,Florida A&M Rattlers,draftkings,28.5,-108,28.0,-118,0.0283,28.0,-103,2026-11-03T01:29:54Z
+2026-11-02T22:31:49Z,8bca11339ea7c2bf3b41e79b63a9a5a6,2026-11-03T01:30:00Z,Florida St Seminoles,Florida A&M Rattlers,spreads,Florida A&M Rattlers,fanduel,28.5,-108,28.0,-118,0.0283,28.0,-103,2026-11-03T01:29:54Z
+2026-11-02T22:31:49Z,7d070404931fc1bc875550510c6308fc,2026-11-03T02:00:00Z,Houston Cougars,La Salle Explorers,totals,Over,williamhill_us,133.0,-110,134.5,-117,0.0408,134.5,-117,2026-11-03T01:32:16Z
+2026-11-02T22:31:49Z,3d7267336c139cfb6aa2c4ce4b77133b,2026-11-03T02:30:00Z,Oregon St Beavers,Weber State Wildcats,totals,Under,williamhill_us,161.5,-110,159.5,-104,0.0208,160.5,-106,2026-11-03T01:32:16Z
+2026-11-02T22:31:49Z,3d7267336c139cfb6aa2c4ce4b77133b,2026-11-03T02:30:00Z,Oregon St Beavers,Weber State Wildcats,totals,Under,fanduel,161.5,-110,159.5,-104,0.0208,160.5,-106,2026-11-03T01:32:16Z
 2026-11-02T23:15:10Z,85709ce146f914cbde4e6a43c96b6626,2026-11-03T00:00:00Z,Iona Gaels,Vermont Catamounts,spreads,Iona Gaels,fanatics,1.0,-115,-1.0,-103,0.0374,-1.0,-103,2026-11-02T23:50:29Z
 2026-11-02T23:15:10Z,32f224800fe08d0511be6ca3bfa59be4,2026-11-03T00:00:00Z,James Madison Dukes,Miami (OH) RedHawks,spreads,James Madison Dukes,fanduel,1.5,-128,-1.0,-112,0.0634,-1.0,-115,2026-11-02T23:50:29Z
 2026-11-02T23:15:10Z,7ae7b8859821ce048f256a10907eeb45,2026-11-03T01:00:00Z,Oklahoma Sooners,East Texas A&M Lions,totals,Under,fanduel,148.5,-110,145.5,-105,0.0506,148.5,-120,2026-11-03T00:23:02Z
-2026-11-02T23:15:10Z,0ade57d062b3a4002c2dd5ab7604bed0,2026-11-03T02:00:00Z,Grand Canyon Antelopes,Texas Southern Tigers,totals,Under,betmgm,142.5,-110,140.0,-111,0.051,144.0,-110,2026-11-03T00:23:02Z
+2026-11-02T23:15:10Z,0ade57d062b3a4002c2dd5ab7604bed0,2026-11-03T02:00:00Z,Grand Canyon Antelopes,Texas Southern Tigers,totals,Under,betmgm,142.5,-110,140.0,-111,0.051,144.0,-110,2026-11-03T01:32:16Z
 2026-11-02T23:50:31Z,c5189ac34ee35b759f907342dde69951,2026-11-03T00:00:00Z,Yale Bulldogs,Howard Bison,spreads,Howard Bison,betmgm,8.5,-115,7.0,-108,0.0263,7.0,-108,2026-11-02T23:50:29Z
 2026-11-02T23:50:31Z,21c4f4d06b2c7fbe30261414e7c654d3,2026-11-03T00:00:00Z,Old Dominion Monarchs,Western Michigan Broncos,totals,Over,williamhill_us,154.0,-110,155.5,-112,0.0311,155.5,-112,2026-11-02T23:50:29Z
 2026-11-02T23:50:31Z,1a2a8077d8a265e4cfbd5946eaecd278,2026-11-03T00:10:00Z,East Carolina Pirates,South Carolina Upstate Spartans,spreads,East Carolina Pirates,fanduel,-14.5,-120,-16.0,-114,0.03,-16.0,-114,2026-11-02T23:50:29Z
@@ -38,5 +38,5 @@ alerted,event_id,commence,home,away,market,side,book,point,price,pin_point,pin_p
 2026-11-02T23:50:31Z,56120f3a159b65ffcbb5d0c91eed5954,2026-11-03T00:10:00Z,Syracuse Orange,New Haven Chargers,spreads,New Haven Chargers,betmgm,27.5,-115,26.5,-116,0.0255,26.5,-116,2026-11-02T23:50:29Z
 2026-11-02T23:50:31Z,c026662dbd1c30e0c9bafd4292794574,2026-11-03T00:30:00Z,NC State Wolfpack,Campbell Fighting Camels,spreads,Campbell Fighting Camels,betmgm,23.5,-110,23.0,-120,0.0276,23.0,-111,2026-11-03T00:23:02Z
 2026-11-02T23:50:31Z,dfc5070c79c73952d6e449771ede3c12,2026-11-03T01:00:00Z,Creighton Bluejays,UMKC Kangaroos,spreads,Creighton Bluejays,fanduel,-25.5,-118,-27.5,-104,0.0384,-27.5,-104,2026-11-03T00:23:02Z
-2026-11-02T23:50:31Z,0ade57d062b3a4002c2dd5ab7604bed0,2026-11-03T02:00:00Z,Grand Canyon Antelopes,Texas Southern Tigers,totals,Over,fanduel,142.5,-110,144.0,-120,0.0421,144.0,-120,2026-11-03T00:23:02Z
-2026-11-03T00:23:14Z,952c912a59787af3888b223149e2a906,2026-11-03T02:00:00Z,Oklahoma St Cowboys,Incarnate Word Cardinals,totals,Over,fanduel,160.5,-110,162.0,-125,0.0592,162.0,-125,2026-11-03T00:23:02Z
+2026-11-02T23:50:31Z,0ade57d062b3a4002c2dd5ab7604bed0,2026-11-03T02:00:00Z,Grand Canyon Antelopes,Texas Southern Tigers,totals,Over,fanduel,142.5,-110,144.0,-120,0.0421,144.0,-120,2026-11-03T01:32:16Z
+2026-11-03T00:23:14Z,952c912a59787af3888b223149e2a906,2026-11-03T02:00:00Z,Oklahoma St Cowboys,Incarnate Word Cardinals,totals,Over,fanduel,160.5,-110,162.0,-125,0.0592,162.0,-125,2026-11-03T01:32:16Z
