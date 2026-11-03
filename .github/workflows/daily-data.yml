@@ -2,7 +2,8 @@ name: CBB daily data
 # Every afternoon (Nov-Apr), rebuild the model's data files and commit them to this repo: the Excel workbook's files
 # (games, teams, model, meta, lines), the paper-trading log, Haslametrics snapshots, and the new-line checker's
 # model numbers (steam/model.json). Runs here, not in a Claude task, because GitHub Actions can commit to this repo
-# on its own (a scheduled Claude run can't). The Claude daily refresh still writes the board.
+# on its own (a scheduled Claude run can't). It also builds the board's files (meta, teams, slates, ESPN lines, players,
+# props) and publishes them to branch board-data; the Claude daily refresh only grades the ledger and writes the board.
 # 19:20 UTC = 2:20 PM Eastern (standard time); a few minutes late is normal for scheduled jobs.
 on:
   schedule:
@@ -40,9 +41,9 @@ jobs:
         id: build
         run: |
           set -e
-          H="$RUNNER_TEMP/hoopr/mbb"; D="$RUNNER_TEMP/dash"; mkdir -p "$D"
+          H="$RUNNER_TEMP/hoopr/mbb"; D="$RUNNER_TEMP/dash"; LG="$RUNNER_TEMP/log"; mkdir -p "$D" "$LG"
           G0=$(wc -l < games.csv); L0=$(wc -l < lines.csv); T0=$(python3 -c "import json;print(json.load(open('meta.json')).get('data_through',''))")
-          python3 pipeline/espn_schedule.py "$H" 14 28
+          python3 pipeline/espn_schedule.py "$H" 14 28 2>"$LG/espn_schedule.txt" || { cat "$LG/espn_schedule.txt" >&2; exit 1; }; cat "$LG/espn_schedule.txt" >&2
           python3 pipeline/lines.py "$H" . || git checkout -- lines.csv
           python3 pipeline/bpi.py "$H" . || true
           python3 pipeline/hasla.py . || true
@@ -53,6 +54,11 @@ jobs:
           if [ -f "$D/board_espn.json" ]; then python3 pipeline/paper.py "$H" . "$D" || git checkout -- paper.csv 2>/dev/null || true; fi
           python3 pipeline/export_model.py "$D" steam/teammap.json . 3
           cp pipeline/boardmath.py steam/boardmath.py
+          # the board's own files, so the Claude daily task only has to write them (published to branch board-data below)
+          python3 pipeline/players.py "$H" . "$D/board_players.json" 2>"$LG/players.txt" || rm -f "$D/board_players.json"; cat "$LG/players.txt" >&2
+          python3 pipeline/props_proj.py "$H" "$D/board_props.json" 2>"$LG/props_proj.txt" || rm -f "$D/board_props.json"; cat "$LG/props_proj.txt" >&2
+          python3 pipeline/grade_inputs.py "$H" "$D/mbb"
+          python3 pipeline/board_summary.py . "$D" "$LG" "$L0"
       - name: Commit
         if: success()
         run: |
@@ -62,3 +68,14 @@ jobs:
           git diff --cached --quiet && { echo "nothing to commit"; exit 0; }
           git commit -q -m "Data through $(python3 -c "import json;print(json.load(open('meta.json'))['data_through'])")"
           for i in 1 2 3; do git pull --rebase -q origin main && git push -q origin HEAD:main && break; sleep 10; done
+      - name: Publish board data (branch board-data, replaced each run)
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd "$RUNNER_TEMP/dash"
+          git init -q -b board-data
+          git config user.name "cbb-data-bot"; git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Board data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push -f -q "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" board-data
