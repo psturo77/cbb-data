@@ -6,6 +6,7 @@ usage: ODDS_API_KEY=... python3 odds_run.py <db dir> <out dir> --versions=odds:N
 
 <db dir> holds what ArtifactData saved: board/*.json, slate/*.json, rec/*.json (recent recs), prop/*.json (1 PM run).
 --versions: the versions ArtifactData listed for those board docs; leave a name out if the doc doesn't exist.
+--manual: started from the board's Full refresh button - every step, but never the 9 AM summary or 1 PM props.
 --light: odds only (the button's quick refresh) - ESPN lines and PRIME/arb alerts too, using the saved injury list,
          but no new injury pull, no ledger, no digest, no props.
 
@@ -28,8 +29,9 @@ for kv in filter(None, flags.get("--versions", "").split(",")):
     k, v = kv.split(":"); VER[k.strip()] = int(v)
 os.makedirs(f"{OUT}/rec", exist_ok=True); os.makedirs(f"{OUT}/prop", exist_ok=True)
 now = pd.Timestamp.now(tz="UTC"); et = now.tz_convert("America/New_York")
-DIGEST = (et.hour == 9 and not LIGHT) or "--force-digest" in flags
-PROPS = (et.hour == 13 and not LIGHT) or "--force-props" in flags
+MANUAL = "--manual" in flags or LIGHT          # started from the board's button: no morning summary, no props
+DIGEST = (et.hour == 9 and not MANUAL) or "--force-digest" in flags
+PROPS = (et.hour == 13 and not MANUAL) or "--force-props" in flags
 notes, status = [], dict(stop=False, credits=None, odds_ok=False)
 clean = lambda s: (s or "").replace(KEY, "<key>") if KEY else (s or "")
 
