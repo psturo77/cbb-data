@@ -1,7 +1,7 @@
 """Edge alerts: upcoming games with a NEW board edge at or above a threshold, plus new arbs across your books.
 
-Hourly alerts are PRIME bets only (line expected to move 2.5+ pts against the price; never CAUTION ones); the --digest
-morning summary lists every qualifying bet with PRIME / CAUTION tags, PRIME first.
+Alerts are any NEW bet whose edge clears the threshold (default 5%; road teams need 6%), best edge first; CAUTION totals
+are left out. The --digest morning summary lists every qualifying bet (3%+), CAUTION ones tagged, ranked by edge.
 usage: python3 alerts.py <folder of board slate docs> <board_meta.json> <board_espn.json> <alerted.json> [min edge, default 0.05] [board_odds.json]
                         [--inj=board_injuries.json] [--digest[=min edge, default 0.03]]
 --inj: players listed Out move the model line, as on the board. --digest: instead of new alerts, print the morning summary
@@ -15,7 +15,7 @@ more than 6 hours newer; ESPN's true opener and BPI are used either way.
 import sys, os, glob, json
 import pandas as pd
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from boardmath import calibrate_all, bets_for, top_bets, min_for, arbs_for, timing, payout, is_prime, caution
+from boardmath import calibrate_all, bets_for, top_bets, min_for, arbs_for, payout, caution
 
 flags = {a.split("=")[0]: (a.split("=", 1)[1] if "=" in a else "") for a in sys.argv[1:] if a.startswith("--")}
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -64,19 +64,16 @@ for gid in set(espn) | set(ug):
     matchup = f"{loc(g, 'away')} at {loc(g, 'home')}, {tip}"
     for b in top_bets(bets_for(g, o, sdm, sdt, books if mine else None)):
         if b["ev"] < min_for(g, b, MIN): continue
-        prime, warn = is_prime(g, b, o), caution(g, b, o)
-        if not DIGEST and (not prime or warn): continue        # hourly alerts: PRIME bets only, never CAUTION ones
+        warn = caution(g, b, o)
+        if not DIGEST and warn: continue                       # alerts: any new bet over the threshold, never CAUTION ones
         name = (f"{loc(g, b['side'])} {fmt(b['line'])}" if b["market"] == "spread" else
                 f"{'Over' if b['side'] == 'over' else 'Under'} {b['line']:g}" if b["market"] == "total" else f"{loc(g, b['side'])} ML")
         key = f"{gid}|{b['market']}|{b['side']}|{b['line']}"
         if key in seen and not DIGEST: continue
-        tm = timing(g, b, o)
-        when = "bet now - line expected to move against this price" if tm is not None and tm >= 0.5 else \
-               "can wait - line expected to drift your way" if tm is not None and tm <= -0.5 else ""
         off = f" - {b['off']:g} pts better than Pinnacle" if b.get("off") else ""
-        tag = ("PRIME " if prime else "") + ("CAUTION " if warn else "")
-        lines.append((b["ev"] + (1 if prime else 0), f"{tag}{name} {price(b['price'])} ({b.get('book') or o.get('book', 'ESPN')}) - edge {b['ev']:+.1%}, "
-                               f"{b['p']:.0%} to win, {b['units']:.1f}u - {matchup}{off}" + (f" - {when}" if when else "") + (f" - injury: {inj}" if inj else "")))
+        tag = "CAUTION " if warn else ""
+        lines.append((b["ev"], f"{tag}{name} {price(b['price'])} ({b.get('book') or o.get('book', 'ESPN')}) - edge {b['ev']:+.1%}, "
+                               f"{b['p']:.0%} to win, {b['units']:.1f}u - {matchup}{off}" + (f" - injury: {inj}" if inj else "")))
         seen[key] = now.isoformat()
     if mine and o.get("opt") and not DIGEST:
         for x in arbs_for(o, books):
@@ -96,4 +93,4 @@ if DIGEST:
     print(f"digest: {len(lines)} game(s) today with a best bet at {MIN:.0%}+", file=sys.stderr); sys.exit(0)
 cut = (now - pd.Timedelta(days=14)).isoformat()
 json.dump({"alerted": {k: v for k, v in seen.items() if v >= cut}}, open(SEEN, "w"))
-print(f"{len(lines)} new alert(s) (PRIME edges {MIN:.0%}+ and arbs) across {len(set(espn) | set(ug))} games with lines", file=sys.stderr)
+print(f"{len(lines)} new alert(s) (edges {MIN:.0%}+ and arbs) across {len(set(espn) | set(ug))} games with lines", file=sys.stderr)

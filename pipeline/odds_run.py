@@ -7,7 +7,7 @@ usage: ODDS_API_KEY=... python3 odds_run.py <db dir> <out dir> --versions=odds:N
 <db dir> holds what ArtifactData saved: board/*.json, slate/*.json, rec/*.json (recent recs), prop/*.json (1 PM run).
 --versions: the versions ArtifactData listed for those board docs; leave a name out if the doc doesn't exist.
 --manual: started from the board's Full refresh button - every step, but never the 9 AM summary or 1 PM props.
---light: odds only (the button's quick refresh) - ESPN lines and PRIME/arb alerts too, using the saved injury list,
+--light: odds only (the button's quick refresh) - ESPN lines and new-bet/arb alerts too, using the saved injury list,
          but no new injury pull, no ledger, no digest, no props.
 
 Writes into <out dir>:
@@ -161,8 +161,8 @@ for i, b in enumerate(batches, 1): json.dump({"writes": b}, open(f"{OUT}/batch{i
 lines = []
 if DIGEST:
     lines += ["Today's best bets:"] + digest if digest else ["Today's best bets: none at 3%+ yet."]
-if alerts: lines += ["New PRIME bets:"] + alerts
-elif not DIGEST: lines.append("No new PRIME bets.")
+if alerts: lines += ["New bets over 5%:"] + alerts
+elif not DIGEST: lines.append("No new bets over 5%.")
 lines += notes
 inj_txt = f"injuries: {inj_n} players listed" if inj_n is not None else ("injuries: saved list reused" if LIGHT else "injuries: not updated")
 ledger_txt = "ledger: skipped (quick refresh)" if LIGHT else f"ledger: {new_recs} new recs"
