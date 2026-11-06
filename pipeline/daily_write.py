@@ -75,7 +75,15 @@ else:
 runlog = dict(at=now.strftime("%Y-%m-%dT%H:%M:%SZ"), checks=checks, board=board_txt, lines=lines)
 json.dump(runlog, open(f"{OUT}/runlog.json", "w"), indent=1)
 writes.append(entry("board", "runlog", f"{OUT}/runlog.json", VB))
-batches = [writes[i:i + 50] for i in range(0, len(writes), 50)]
+def split(ws, n=50, cap=600_000):
+    """batches of at most n writes and about cap bytes of documents (ArtifactData allows 50 writes / 1 MiB per batch)"""
+    out, cur, size = [], [], 0
+    for w in ws:
+        b = os.path.getsize(w["file_path"]) if "file_path" in w else 200
+        if cur and (len(cur) >= n or size + b > cap): out.append(cur); cur, size = [], 0
+        cur.append(w); size += b
+    return out + ([cur] if cur else [])
+batches = split(writes)
 for i, b in enumerate(batches, 1): json.dump({"writes": b}, open(f"{OUT}/batch{i}.json", "w"), indent=1)
 reply = "\n".join(lines) + ("\nBoard updated." if board_txt == "written" else "")
 open(f"{OUT}/reply.txt", "w").write(reply + "\n")

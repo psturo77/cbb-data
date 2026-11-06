@@ -145,7 +145,15 @@ if os.path.exists(alerted): first.append(pin("alerts", dict(op="set", collection
 extra = [dict(op="set", collection="rec", doc_id=os.path.basename(f)[:-5], file_path=f) for f in sorted(glob.glob(f"{OUT}/rec/*.json"))]
 extra += [dict(op="set", collection="prop", doc_id=os.path.basename(f)[:-5], file_path=f) for f in sorted(glob.glob(f"{OUT}/prop/*.json"))]
 for f in glob.glob(f"{OUT}/batch*.json"): os.remove(f)
-batches = ([first] if first else []) + [extra[i:i + 50] for i in range(0, len(extra), 50)]
+def split(ws, n=50, cap=600_000):
+    """batches of at most n writes and about cap bytes of documents (ArtifactData allows 50 writes / 1 MiB per batch)"""
+    out, cur, size = [], [], 0
+    for w in ws:
+        b = os.path.getsize(w["file_path"]) if "file_path" in w else 200
+        if cur and (len(cur) >= n or size + b > cap): out.append(cur); cur, size = [], 0
+        cur.append(w); size += b
+    return out + ([cur] if cur else [])
+batches = ([first] if first else []) + split(extra)
 for i, b in enumerate(batches, 1): json.dump({"writes": b}, open(f"{OUT}/batch{i}.json", "w"), indent=1)
 
 # ---- step 12: reply
