@@ -32,6 +32,7 @@ now = pd.Timestamp.now(tz="UTC"); et = now.tz_convert("America/New_York")
 MANUAL = "--manual" in flags or LIGHT          # started from the board's button: no morning summary, no props
 DIGEST = (et.hour == 9 and not MANUAL) or "--force-digest" in flags
 PROPS = (et.hour == 13 and not MANUAL) or "--force-props" in flags
+if flags.get("--raw") and "--force-props" not in flags: PROPS = False   # a retry from a saved download makes no new API calls
 notes, status = [], dict(stop=False, credits=None, odds_ok=False)
 clean = lambda s: (s or "").replace(KEY, "<key>") if KEY else (s or "")
 
