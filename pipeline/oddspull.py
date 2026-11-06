@@ -110,20 +110,25 @@ for ev in raw:
                spp=mid([x[1] for x in SH]), op=mid([x[1] for x in OV]), up=mid([x[1] for x in UN]),
                mlh=best(MH)[0] if MH else None, mla=best(MA)[0] if MA else None,
                mid=dict(sp=m_sp, tot=m_tot), anchor="Pinnacle" if "sp" in pin else None,
-               opt=dict(sh=frontier(SH, 1), sa=frontier(SA, 1), ov=frontier(OV, -1), un=frontier(UN, 1), mh=best(MH), ma=best(MA)))
+               opt=dict(sh=frontier(SH, 1), sa=frontier(SA, 1), ov=frontier(OV, -1), un=frontier(UN, 1), mh=best(MH), ma=best(MA)),
+               q=dict(sh=SH, sa=SA, ov=OV, un=UN, mh=MH, ma=MA))   # every book's quote, for the board's bet detail (bet math uses opt)
     p0 = prev.get(g["id"])
     rec["open"] = p0["open"] if p0 and p0.get("open") else dict(sp=rec["sp"], tot=rec["tot"], nvh=rec["nvh"], seen=seen)
     out_games[g["id"]] = rec; fresh.add(g["id"]); matched += 1
 cut = now - pd.Timedelta(days=14)
 for gid, r in prev.items():
     if gid not in out_games and r.get("seen") and pd.Timestamp(r["seen"]) > cut:
-        c = dict(r); c.pop("opt", None); out_games[gid] = c
+        c = dict(r); c.pop("opt", None); c.pop("q", None); out_games[gid] = c
 doc = dict(loaded=now.strftime("%Y-%m-%dT%H:%M:%SZ"), file="cloud pull", books=books,
            book=books[0] if len(books) == 1 else f"{len(books)} books",
            allBooks=sorted([dict(k=k, t=t) for k, t in seen_books.items()], key=lambda x: x["t"]),
            games=out_games, unmatched=sorted(unmatched), matched=matched, source="cloud")
 size = lambda: len(json.dumps(doc))
-for gid in sorted(fresh, key=lambda i: out_games[i]["start"], reverse=True):
+far = sorted(fresh, key=lambda i: out_games[i]["start"], reverse=True)
+for gid in far:
+    if size() <= 230000: break
+    out_games[gid].pop("q", None)
+for gid in far:
     if size() <= 230000: break
     out_games[gid].pop("opt", None)
 json.dump(doc, open(OUT, "w"), separators=(",", ":"))
