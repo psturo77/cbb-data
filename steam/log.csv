@@ -77,10 +77,10 @@ alerted,event_id,commence,home,away,market,side,book,point,price,pin_point,pin_p
 2026-11-07T20:18:17Z,2fe71d55b857b537c85ef94c9f50ef40,2026-11-07T23:00:00Z,New Mexico Lobos,Northern Arizona Lumberjacks,spreads,Northern Arizona Lumberjacks,williamhill_us,28.5,-110,27.5,-108,0.0225,28.5,-116,2026-11-07T22:25:25Z
 2026-11-07T21:29:12Z,2bddde1bb43d000ff50217cb17849385,2026-11-07T22:00:00Z,High Point Panthers,Washington St Cougars,spreads,Washington St Cougars,fanduel,13.5,-110,13.0,-116,0.0226,13.0,-116,2026-11-07T21:29:05Z
 2026-11-07T21:29:12Z,2fe71d55b857b537c85ef94c9f50ef40,2026-11-07T23:00:00Z,New Mexico Lobos,Northern Arizona Lumberjacks,totals,Over,fanatics,156.0,-110,157.5,-116,0.0476,157.5,-111,2026-11-07T22:25:25Z
-2026-11-07T21:29:12Z,13f00af18ed09193a860cfb25d9caff1,2026-11-08T00:00:00Z,Dayton Flyers,Northern Illinois Huskies,totals,Over,fanatics,146.5,-110,148.5,-108,0.0373,148.5,-108,2026-11-07T22:25:25Z
-2026-11-07T21:29:12Z,ea605c0602ddafba2d5c0366c1971c20,2026-11-08T00:30:00Z,Georgetown Hoyas,Maryland Terrapins,totals,Over,fanatics,145.0,-110,146.5,-111,0.027,146.5,-111,2026-11-07T22:25:25Z
-2026-11-07T21:29:12Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,draftkings,1.5,-125,-1.0,-102,0.0354,-1.0,-103,2026-11-07T22:25:25Z
-2026-11-07T21:29:12Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,fanduel,1.5,-120,-1.0,-102,0.0546,-1.0,-103,2026-11-07T22:25:25Z
-2026-11-07T21:29:12Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,betmgm,1.5,-118,-1.0,-102,0.0627,-1.0,-103,2026-11-07T22:25:25Z
-2026-11-07T22:08:09Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,draftkings,1.5,-118,-1.0,-103,0.0649,-1.0,-103,2026-11-07T22:25:25Z
-2026-11-07T22:08:09Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,fanatics,1.0,-115,-1.0,-103,0.0448,-1.0,-103,2026-11-07T22:25:25Z
+2026-11-07T21:29:12Z,13f00af18ed09193a860cfb25d9caff1,2026-11-08T00:00:00Z,Dayton Flyers,Northern Illinois Huskies,totals,Over,fanatics,146.5,-110,148.5,-108,0.0373,148.5,-108,2026-11-07T23:01:40Z
+2026-11-07T21:29:12Z,ea605c0602ddafba2d5c0366c1971c20,2026-11-08T00:30:00Z,Georgetown Hoyas,Maryland Terrapins,totals,Over,fanatics,145.0,-110,146.5,-111,0.027,146.5,-111,2026-11-07T23:01:40Z
+2026-11-07T21:29:12Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,draftkings,1.5,-125,-1.0,-102,0.0354,-1.0,-101,2026-11-07T23:01:40Z
+2026-11-07T21:29:12Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,fanduel,1.5,-120,-1.0,-102,0.0546,-1.0,-101,2026-11-07T23:01:40Z
+2026-11-07T21:29:12Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,betmgm,1.5,-118,-1.0,-102,0.0627,-1.0,-101,2026-11-07T23:01:40Z
+2026-11-07T22:08:09Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,draftkings,1.5,-118,-1.0,-103,0.0649,-1.0,-101,2026-11-07T23:01:40Z
+2026-11-07T22:08:09Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,fanatics,1.0,-115,-1.0,-103,0.0448,-1.0,-101,2026-11-07T23:01:40Z
