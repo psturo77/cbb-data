@@ -22,7 +22,7 @@ total,none,,,,,0.0,,
 param,,,,,,11.186471071772578,,sigma_margin
 param,,,,,,16.7357111614457,,sigma_total
 stat,,,,,,23479.0,,n_games
-stat,,,,,,46331.0,,data_through_serial
+stat,,,,,,46332.0,,data_through_serial
 stat,,,,,,1.0,,spread_model_is_efficiency
 stat,,,,,,1.0,,total_model_is_efficiency
 stat,,,,,,0.35420562570628544,,spread_adjr2_efficiency
@@ -33,5 +33,5 @@ stat,,,,,,11.186471071772578,,spread_rmse_efficiency
 stat,,,,,,11.667190389613724,,spread_rmse_box
 stat,,,,,,16.7357111614457,,total_rmse_efficiency
 stat,,,,,,16.934725570716285,,total_rmse_box
-stat,,,,,,193.0,,market_correction_games
-stat,,,,,,193.0,,total_correction_games
+stat,,,,,,251.0,,market_correction_games
+stat,,,,,,251.0,,total_correction_games
