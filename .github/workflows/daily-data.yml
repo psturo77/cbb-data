@@ -79,3 +79,23 @@ jobs:
           git add -A
           git commit -q -m "Board data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           git push -f -q "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" board-data
+      - name: Build the board writes (branch daily-out, replaced each run)
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # grade the ledger and props here, so the Claude daily task only copies files (it can't run repo code)
+          DB="$RUNNER_TEMP/ddb"; OUT="$RUNNER_TEMP/dout"; PUB="$RUNNER_TEMP/dpub"; mkdir -p "$DB/rec" "$DB/prop" "$PUB"
+          if git fetch -q --depth 1 origin +refs/heads/odds-raw:refs/remotes/origin/odds-raw; then
+            mkdir -p "$RUNNER_TEMP/oraw" && git archive refs/remotes/origin/odds-raw state | tar -x -C "$RUNNER_TEMP/oraw" || true
+            cp "$RUNNER_TEMP"/oraw/state/rec/*.json "$DB/rec/" 2>/dev/null || true
+            cp "$RUNNER_TEMP"/oraw/state/prop/*.json "$DB/prop/" 2>/dev/null || true
+          fi
+          python3 pipeline/daily_write.py "$RUNNER_TEMP/dash" . "$DB" "$OUT"
+          python3 pipeline/publish_batches.py "$OUT" "$PUB"
+          cd "$PUB"
+          git init -q -b daily-out
+          git config user.name "cbb-data-bot"; git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Daily board writes $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push -f -q "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" daily-out
