@@ -62,11 +62,11 @@ jobs:
           git fetch -q --depth 1 origin +refs/heads/board-data:refs/remotes/origin/board-data
           git archive refs/remotes/origin/board-data | tar -x -C /tmp/bd
           if git fetch -q --depth 1 origin +refs/heads/odds-raw:refs/remotes/origin/odds-raw; then git archive refs/remotes/origin/odds-raw | tar -x -C /tmp/prev; fi
-          for n in meta players espn props; do [ -f /tmp/bd/board_$n.json ] && cp /tmp/bd/board_$n.json /tmp/db/board/$n.json; done
+          for n in meta players espn props teams; do [ -f /tmp/bd/board_$n.json ] && cp /tmp/bd/board_$n.json /tmp/db/board/$n.json; done
           cp pipeline/teammap.json /tmp/db/board/teammap.json
           for f in /tmp/bd/slate_d*.json; do cp "$f" "/tmp/db/slate/$(basename "$f" | sed 's/^slate_//')"; done
           mkdir -p /tmp/prev/state/rec /tmp/prev/state/prop
-          for n in alerts injuries; do [ -f /tmp/prev/state/$n.json ] && cp /tmp/prev/state/$n.json /tmp/db/board/$n.json; done
+          for n in alerts injuries odds prefs; do [ -f /tmp/prev/state/$n.json ] && cp /tmp/prev/state/$n.json /tmp/db/board/$n.json; done
           cp /tmp/prev/state/rec/*.json /tmp/db/rec/ 2>/dev/null || true
           cp /tmp/prev/state/prop/*.json /tmp/db/prop/ 2>/dev/null || true
           echo "slates: $(ls /tmp/db/slate | wc -l), recs known: $(ls /tmp/db/rec | wc -l)"
@@ -103,7 +103,9 @@ jobs:
           cp /tmp/out/prop/*.json /tmp/raw/state/prop/ 2>/dev/null || true
           if [ -f /tmp/out/alerted.json ]; then cp /tmp/out/alerted.json /tmp/raw/state/alerts.json; elif [ -f /tmp/prev/state/alerts.json ]; then cp /tmp/prev/state/alerts.json /tmp/raw/state/; fi
           if [ -f /tmp/out/board_injuries.json ]; then cp /tmp/out/board_injuries.json /tmp/raw/state/injuries.json; elif [ -f /tmp/prev/state/injuries.json ]; then cp /tmp/prev/state/injuries.json /tmp/raw/state/; fi
-          echo "{\"mode\": \"$MODE\", \"built_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"run\": \"${{ github.run_id }}\"}" > /tmp/raw/out/run.json
+          if [ -f /tmp/out/board_odds.json ]; then cp /tmp/out/board_odds.json /tmp/raw/state/odds.json; elif [ -f /tmp/prev/state/odds.json ]; then cp /tmp/prev/state/odds.json /tmp/raw/state/; fi
+          [ -f /tmp/prev/state/prefs.json ] && cp /tmp/prev/state/prefs.json /tmp/raw/state/ || true
+          echo "{\"mode\":\"$MODE\", \"built_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"run\": \"${{ github.run_id }}\"}" > /tmp/raw/out/run.json
           cat /tmp/raw/out/reply.txt 2>/dev/null || cat /tmp/out_failed
       - name: Publish to the odds-raw branch
         run: |
