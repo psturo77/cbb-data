@@ -68,7 +68,21 @@ card = dict(updated=pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ"), s
             record=dict(w=int((G.result == "win").sum()), l=int((G.result == "loss").sum()), p=int((G.result == "push").sum()),
                         units=round(float(pd.to_numeric(G.units_won).sum()), 2), staked=round(float(G.units.sum()), 2)),
             close_source="DraftKings close via ESPN (lines.csv)")
-json.dump(card, open(f"{REPO}/scorecard.json", "w"), indent=1)
+# compact graded-rec feed for the artifact's Stats tab: one array per graded rec, newest 1500 (keeps the doc well under the size limit)
+# [date(ET), market, side, line, price, units, units_won, result, clv, ev, p, prime, early, hours_to_tip, caution, book]
+def _n(x, d=3):
+    try:
+        v = float(x); return None if v != v else round(v, d)
+    except Exception: return None
+rows = []
+for _, r in G.sort_values("start").iterrows():
+    dt = pd.Timestamp(r.start).tz_convert("America/New_York").strftime("%Y-%m-%d") if pd.notna(r.start) else None
+    rows.append([dt, r.market, r.side, _n(r.line, 1), _n(r.price, 0), _n(r.units, 2), _n(r.units_won, 3), r.result, _n(r.clv, 2), _n(r.ev, 3), _n(r.p, 3),
+                 int(bool(r.prime)) if pd.notna(r.prime) else 0, int(bool(r.early)) if pd.notna(r.early) else 0, _n(r.hours_to_tip, 1),
+                 1 if pd.notna(r.get("caution")) and r.get("caution") else 0, r.book])
+card["cols"] = ["date", "market", "side", "line", "price", "units", "won", "result", "clv", "ev", "p", "prime", "early", "hrs", "caution", "book"]
+card["rows"] = rows[-1500:]
+json.dump(card, open(f"{REPO}/scorecard.json", "w"), separators=(",", ":"))
 avg_txt = "-" if st["avg"] is None else f"{st['avg']:+.2f}"; beat_txt = "-" if st["beat"] is None else f"{st['beat']:.0%}"
 print(f"board recs CLV: status {status.upper()} | spreads last {st['n']}: avg CLV {avg_txt} pts, beat close {beat_txt}", file=sys.stderr)
 print(f"board recs: {len(R)} recorded, {len(G)} graded" + (f": {summ(G)}" if len(G) else "") + (f" ({'; '.join(parts)})" if parts else ""), file=sys.stderr)
