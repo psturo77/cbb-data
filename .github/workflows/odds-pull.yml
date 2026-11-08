@@ -1,13 +1,19 @@
 name: CBB odds pull
-# Pulls The Odds API (every book + Pinnacle) three times a day and saves the raw download to the odds-raw branch.
-# The Claude odds task runs 5 minutes later and builds the board's odds, alerts, injuries and ledger from it, so the
-# API key stays in GitHub secrets and never appears in a Claude task. The 1 PM run also snapshots player-points props.
+# Three times a day: pull The Odds API (every book + Pinnacle), then run pipeline/odds_run.py here in GitHub to build the
+# board's odds, ESPN lines, injuries, alerts, ledger recs (and the 1 PM props snapshot). Everything lands on the odds-raw
+# branch: out/batch*.json are ready-made board writes, and state/ carries the alert history and the recs already made.
+# The Claude odds task runs 5 minutes later and only copies out/batch*.json onto the board - it runs no code and holds no key.
 # Times are UTC: 14:12 / 18:12 / 22:12 = 9:12 AM / 1:12 PM / 5:12 PM Eastern (standard time; an hour later in ET once DST starts in March).
 on:
   schedule:
     - cron: "12 14,18,22 * 11,12,1,2,3,4 *"
   workflow_dispatch:
     inputs:
+      mode:
+        description: "scheduled, manual (the board's Full refresh) or quick (odds only)"
+        type: choice
+        options: [manual, quick, scheduled]
+        default: manual
       props:
         description: "Also snapshot player props"
         type: boolean
@@ -23,7 +29,7 @@ permissions:
 jobs:
   pull:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
         with:
@@ -49,6 +55,21 @@ jobs:
           json.dump(meta, open("/tmp/raw/pull.json", "w"))
           print(json.dumps(meta))
           PY
+      - name: Gather board inputs
+        run: |
+          pip install -q pandas
+          mkdir -p /tmp/bd /tmp/prev /tmp/db/board /tmp/db/slate /tmp/db/rec /tmp/db/prop
+          git fetch -q --depth 1 origin +refs/heads/board-data:refs/remotes/origin/board-data
+          git archive refs/remotes/origin/board-data | tar -x -C /tmp/bd
+          if git fetch -q --depth 1 origin +refs/heads/odds-raw:refs/remotes/origin/odds-raw; then git archive refs/remotes/origin/odds-raw | tar -x -C /tmp/prev; fi
+          for n in meta players espn props; do [ -f /tmp/bd/board_$n.json ] && cp /tmp/bd/board_$n.json /tmp/db/board/$n.json; done
+          cp pipeline/teammap.json /tmp/db/board/teammap.json
+          for f in /tmp/bd/slate_d*.json; do cp "$f" "/tmp/db/slate/$(basename "$f" | sed 's/^slate_//')"; done
+          mkdir -p /tmp/prev/state/rec /tmp/prev/state/prop
+          for n in alerts injuries; do [ -f /tmp/prev/state/$n.json ] && cp /tmp/prev/state/$n.json /tmp/db/board/$n.json; done
+          cp /tmp/prev/state/rec/*.json /tmp/db/rec/ 2>/dev/null || true
+          cp /tmp/prev/state/prop/*.json /tmp/db/prop/ 2>/dev/null || true
+          echo "slates: $(ls /tmp/db/slate | wc -l), recs known: $(ls /tmp/db/rec | wc -l)"
       - name: Props snapshot (1 PM run)
         if: github.event_name == 'schedule' || inputs.props == true
         env:
@@ -56,14 +77,38 @@ jobs:
           FORCE: ${{ inputs.props == true && '1' || '0' }}
         run: |
           if [ "$FORCE" != "1" ] && [ "$(TZ=America/New_York date +%H)" != "13" ]; then echo "not the 1 PM run"; exit 0; fi
-          pip install -q pandas
-          git fetch -q --depth 1 origin board-data && git show origin/board-data:board_props.json > /tmp/board_props.json || { echo "no props projections"; exit 0; }
-          mkdir -p /tmp/have
-          python3 pipeline/props_snap.py /tmp/board_props.json pipeline/teammap.json /tmp/have /tmp/raw/prop 60 || echo "props snapshot failed"
+          [ -f /tmp/db/board/props.json ] || { echo "no props projections"; exit 0; }
+          python3 pipeline/props_snap.py /tmp/db/board/props.json /tmp/db/board/teammap.json /tmp/db/prop /tmp/raw/prop 60 || echo "props snapshot failed"
+      - name: Build the board writes
+        env:
+          MODE: ${{ inputs.mode || 'scheduled' }}
+        run: |
+          flag=""; [ "$MODE" = "manual" ] && flag="--manual"; [ "$MODE" = "quick" ] && flag="--light"
+          python3 pipeline/odds_run.py /tmp/db /tmp/out --raw-dir=/tmp/raw $flag || echo "odds_run failed" > /tmp/out_failed
+          mkdir -p /tmp/raw/out /tmp/raw/state/rec /tmp/raw/state/prop
+          cp -r /tmp/out/. /tmp/raw/out/ 2>/dev/null || true
+          rm -f /tmp/raw/out/raw.json
+          python3 - <<'PY'
+          import glob, json, os
+          for f in glob.glob("/tmp/raw/out/batch*.json"):
+              d = json.load(open(f))
+              for w in d["writes"]:
+                  if "file_path" in w: w["file_path"] = w["file_path"].replace("/tmp/out/", "out/")
+              json.dump(d, open(f, "w"), indent=1)
+          PY
+          # carry the state forward: alert history, injuries, and every rec / prop made so far
+          cp /tmp/prev/state/rec/*.json /tmp/raw/state/rec/ 2>/dev/null || true
+          cp /tmp/prev/state/prop/*.json /tmp/raw/state/prop/ 2>/dev/null || true
+          cp /tmp/out/rec/*.json /tmp/raw/state/rec/ 2>/dev/null || true
+          cp /tmp/out/prop/*.json /tmp/raw/state/prop/ 2>/dev/null || true
+          if [ -f /tmp/out/alerted.json ]; then cp /tmp/out/alerted.json /tmp/raw/state/alerts.json; elif [ -f /tmp/prev/state/alerts.json ]; then cp /tmp/prev/state/alerts.json /tmp/raw/state/; fi
+          if [ -f /tmp/out/board_injuries.json ]; then cp /tmp/out/board_injuries.json /tmp/raw/state/injuries.json; elif [ -f /tmp/prev/state/injuries.json ]; then cp /tmp/prev/state/injuries.json /tmp/raw/state/; fi
+          echo "{\"mode\": \"$MODE\", \"built_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"run\": \"${{ github.run_id }}\"}" > /tmp/raw/out/run.json
+          cat /tmp/raw/out/reply.txt 2>/dev/null || cat /tmp/out_failed
       - name: Publish to the odds-raw branch
         run: |
           cd /tmp/raw
           git init -q -b odds-raw
           git config user.name "cbb-odds-bot"; git config user.email "actions@users.noreply.github.com"
-          git add -A && git commit -q -m "Odds pull $(cat pull.json | head -c 60)"
+          git add -A && git commit -q -m "Odds run $(cat pull.json | head -c 60)"
           git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" odds-raw
