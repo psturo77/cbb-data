@@ -1,0 +1,69 @@
+name: CBB odds pull
+# Pulls The Odds API (every book + Pinnacle) three times a day and saves the raw download to the odds-raw branch.
+# The Claude odds task runs 5 minutes later and builds the board's odds, alerts, injuries and ledger from it, so the
+# API key stays in GitHub secrets and never appears in a Claude task. The 1 PM run also snapshots player-points props.
+# Times are UTC: 14:12 / 18:12 / 22:12 = 9:12 AM / 1:12 PM / 5:12 PM Eastern (standard time; an hour later in ET once DST starts in March).
+on:
+  schedule:
+    - cron: "12 14,18,22 * 11,12,1,2,3,4 *"
+  workflow_dispatch:
+    inputs:
+      props:
+        description: "Also snapshot player props"
+        type: boolean
+        default: false
+
+concurrency:
+  group: odds-pull
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: pipeline
+      - name: Pull odds
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          mkdir -p /tmp/raw/prop
+          python3 - <<'PY'
+          import os, json, urllib.request, urllib.error, datetime
+          key = os.environ["ODDS_API_KEY"]
+          url = ("https://api.the-odds-api.com/v4/sports/basketball_ncaab/odds?regions=us,us2,eu&markets=h2h,spreads,totals"
+                 f"&oddsFormat=american&apiKey={key}")
+          meta = {"pulled_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+          try:
+              with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "CBB-model"}), timeout=60) as r:
+                  open("/tmp/raw/raw.json", "wb").write(r.read()); meta["credits"] = r.headers.get("x-requests-remaining", "?")
+          except urllib.error.HTTPError as e:
+              meta["error"] = f"HTTP {e.code} " + e.read()[:120].decode("utf-8", "replace").replace(key, "<key>")
+          except Exception as e:
+              meta["error"] = (str(e) or type(e).__name__).replace(key, "<key>")[:160]
+          json.dump(meta, open("/tmp/raw/pull.json", "w"))
+          print(json.dumps(meta))
+          PY
+      - name: Props snapshot (1 PM run)
+        if: github.event_name == 'schedule' || inputs.props == true
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          FORCE: ${{ inputs.props == true && '1' || '0' }}
+        run: |
+          if [ "$FORCE" != "1" ] && [ "$(TZ=America/New_York date +%H)" != "13" ]; then echo "not the 1 PM run"; exit 0; fi
+          pip install -q pandas
+          git fetch -q --depth 1 origin board-data && git show origin/board-data:board_props.json > /tmp/board_props.json || { echo "no props projections"; exit 0; }
+          mkdir -p /tmp/have
+          python3 pipeline/props_snap.py /tmp/board_props.json pipeline/teammap.json /tmp/have /tmp/raw/prop 60 || echo "props snapshot failed"
+      - name: Publish to the odds-raw branch
+        run: |
+          cd /tmp/raw
+          git init -q -b odds-raw
+          git config user.name "cbb-odds-bot"; git config user.email "actions@users.noreply.github.com"
+          git add -A && git commit -q -m "Odds pull $(cat pull.json | head -c 60)"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" odds-raw

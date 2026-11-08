@@ -2,6 +2,7 @@
 
 usage: ODDS_API_KEY=... python3 odds_run.py <db dir> <out dir> --versions=odds:N,espn:N,alerts:N,injuries:N [--light]
        [--raw=<saved odds json>]   (reuse a download instead of calling The Odds API - for retries and tests)
+       [--raw-dir=<odds-raw branch clone>]  (use the GitHub Action's pull: raw.json, pull.json and prop/*.json; no key needed)
        [--force-digest] [--force-props]   (tests only)
 
 <db dir> holds what ArtifactData saved: board/*.json, slate/*.json, rec/*.json (recent recs), prop/*.json (1 PM run).
@@ -32,6 +33,8 @@ now = pd.Timestamp.now(tz="UTC"); et = now.tz_convert("America/New_York")
 MANUAL = "--manual" in flags or LIGHT          # started from the board's button: no morning summary, no props
 DIGEST = (et.hour == 9 and not MANUAL) or "--force-digest" in flags
 PROPS = (et.hour == 13 and not MANUAL) or "--force-props" in flags
+RAWDIR = flags.get("--raw-dir")
+if RAWDIR: flags["--raw"] = os.path.join(RAWDIR, "raw.json")
 if flags.get("--raw") and "--force-props" not in flags: PROPS = False   # a retry from a saved download makes no new API calls
 notes, status = [], dict(stop=False, credits=None, odds_ok=False)
 clean = lambda s: (s or "").replace(KEY, "<key>") if KEY else (s or "")
@@ -55,7 +58,16 @@ if not any(g.get("status") == "pre" and now < pd.Timestamp(g["start"]) <= now + 
 # ---- step 4: one odds request, never retried
 raw, err = f"{OUT}/raw.json", None
 if flags.get("--raw"):
-    shutil.copy(flags["--raw"], raw); status["credits"] = "?"
+    if os.path.exists(flags["--raw"]): shutil.copy(flags["--raw"], raw)
+    else: err = "no saved odds pull found"
+    status["credits"] = "?"
+    if RAWDIR and os.path.exists(os.path.join(RAWDIR, "pull.json")):
+        pj = json.load(open(os.path.join(RAWDIR, "pull.json")))
+        status["credits"] = pj.get("credits", "?"); status["pulled_at"] = pj.get("pulled_at")
+        if pj.get("error"): err = "GitHub odds pull failed: " + str(pj["error"])[:160]
+        elif pj.get("pulled_at"):
+            age = (now - pd.Timestamp(pj["pulled_at"])).total_seconds() / 3600
+            if age > 2: notes.append(f"Odds are from the {pd.Timestamp(pj['pulled_at']).tz_convert('America/New_York'):%-I:%M %p} ET pull ({age:.1f} hours old).")
 else:
     url = ("https://api.the-odds-api.com/v4/sports/basketball_ncaab/odds?regions=us,us2,eu&markets=h2h,spreads,totals"
            f"&oddsFormat=american&apiKey={KEY}")
@@ -133,6 +145,12 @@ if PROPS and os.path.exists(f"{DB}/board/props.json"):
     props_line = (log[-1] if log else "props: no output") if rc == 0 else "Props step failed: " + (log[-1] if log else f"exit {rc}")
     if rc != 0:
         for f in glob.glob(f"{OUT}/prop/*.json"): os.remove(f)
+
+if RAWDIR and not LIGHT and os.path.isdir(os.path.join(RAWDIR, "prop")):
+    have = {os.path.basename(f) for f in glob.glob(f"{DB}/prop/*.json")}
+    new_p = [f for f in glob.glob(os.path.join(RAWDIR, "prop", "*.json")) if os.path.basename(f) not in have]
+    for f in new_p: shutil.copy(f, f"{OUT}/prop/")
+    if new_p: props_line = f"props: {len(new_p)} new lines recorded from the 1 PM snapshot"
 
 # ---- step 11: batches, ready for ArtifactData "batch"
 def pin(name, entry):
