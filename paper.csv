@@ -25,3 +25,4 @@ game_id,date,start,recorded,home,away,early,book,market,side,line,price,p,ev,uni
 401911453,2026-11-08,2026-11-08T21:30:00Z,2026-11-07T22:20:31Z,Nevada Wolf Pack,Saint Mary's Gaels,True,DraftKings,total,over,143.5,-112.0,0.5426,0.027,0.19,0.4,152.2,1.5,143.5,,,,,
 401911238,2026-11-08,2026-11-08T22:00:00Z,2026-11-07T22:20:31Z,Temple Owls,Richmond Spiders,True,DraftKings,spread,away,-1.5,100.0,0.5176,0.0352,0.44,-4.79,154.1,1.5,151.5,,,,,
 401924734,2026-11-08,2026-11-08T18:00:00Z,2026-11-08T02:59:15Z,Siena Saints,Princeton Tigers,True,DraftKings,spread,home,-1.5,105.0,0.5076,0.0407,0.48,2.93,148.1,-1.5,154.5,,,,,
+401929002,2026-11-09,2026-11-09T04:00:00Z,2026-11-08T16:50:01Z,Hawai'i Rainbow Warriors,UT Arlington Mavericks,True,DraftKings,total,over,148.5,-105.0,0.5266,0.0281,0.18,8.83,154.5,-8.5,148.5,,,,,
