@@ -84,6 +84,6 @@ alerted,event_id,commence,home,away,market,side,book,point,price,pin_point,pin_p
 2026-11-07T21:29:12Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,betmgm,1.5,-118,-1.0,-102,0.0627,-1.0,-101,2026-11-08T00:10:45Z
 2026-11-07T22:08:09Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,draftkings,1.5,-118,-1.0,-103,0.0649,-1.0,-101,2026-11-08T00:10:45Z
 2026-11-07T22:08:09Z,cb9ed150617cacee1bade170e023c9ed,2026-11-08T01:00:00Z,Bradley Braves,Pacific Tigers,spreads,Pacific Tigers,fanatics,1.0,-115,-1.0,-103,0.0448,-1.0,-101,2026-11-08T00:10:45Z
-2026-11-08T00:11:02Z,f2832f61efc983964120a64ef0381763,2026-11-08T03:00:00Z,UC Irvine Anteaters,San José St Spartans,totals,Over,williamhill_us,145.0,-110,146.0,-116,0.0227,146.0,-116,2026-11-08T01:14:13Z
-2026-11-08T01:14:16Z,f2832f61efc983964120a64ef0381763,2026-11-08T03:00:00Z,UC Irvine Anteaters,San José St Spartans,totals,Over,draftkings,145.5,-105,146.0,-116,0.0226,146.0,-116,2026-11-08T01:14:13Z
-2026-11-08T01:14:16Z,f2832f61efc983964120a64ef0381763,2026-11-08T03:00:00Z,UC Irvine Anteaters,San José St Spartans,totals,Over,betmgm,145.5,-105,146.0,-116,0.0226,146.0,-116,2026-11-08T01:14:13Z
+2026-11-08T00:11:02Z,f2832f61efc983964120a64ef0381763,2026-11-08T03:00:00Z,UC Irvine Anteaters,San José St Spartans,totals,Over,williamhill_us,145.0,-110,146.0,-116,0.0227,145.0,-109,2026-11-08T02:14:40Z
+2026-11-08T01:14:16Z,f2832f61efc983964120a64ef0381763,2026-11-08T03:00:00Z,UC Irvine Anteaters,San José St Spartans,totals,Over,draftkings,145.5,-105,146.0,-116,0.0226,145.0,-109,2026-11-08T02:14:40Z
+2026-11-08T01:14:16Z,f2832f61efc983964120a64ef0381763,2026-11-08T03:00:00Z,UC Irvine Anteaters,San José St Spartans,totals,Over,betmgm,145.5,-105,146.0,-116,0.0226,145.0,-109,2026-11-08T02:14:40Z
