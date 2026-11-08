@@ -4,10 +4,11 @@ name: CBB daily data
 # model numbers (steam/model.json). Runs here, not in a Claude task, because GitHub Actions can commit to this repo
 # on its own (a scheduled Claude run can't). It also builds the board's files (meta, teams, slates, ESPN lines, players,
 # props) and publishes them to branch board-data; the Claude daily refresh only grades the ledger and writes the board.
-# 19:20 UTC = 2:20 PM Eastern (standard time); a few minutes late is normal for scheduled jobs.
+# 19:20 UTC = 2:20 PM Eastern (standard time), plus evening score runs; a few minutes late is normal for scheduled jobs.
 on:
   schedule:
     - cron: "20 19 * 11,12,1,2,3,4 *"
+    - cron: "40 2,4,6 * 11,12,1,2,3,4 *"   # 9:40 PM, 11:40 PM, 1:40 AM ET: late finals, so the board's Results button has fresh scores
   workflow_dispatch:
   push:                      # also when the pipeline itself changes, so a fix takes effect the same day
     branches: [main]
