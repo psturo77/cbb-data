@@ -32,3 +32,4 @@ game_id,date,start,recorded,home,away,early,book,market,side,line,price,p,ev,uni
 401919016,2026-11-10,2026-11-10T00:30:00Z,2026-11-09T03:24:46Z,UAB Blazers,Florida A&M Rattlers,True,DraftKings,spread,home,-15.5,-105.0,0.531,0.0367,0.48,22.95,160.2,-15.5,155.5,,,,,
 401926132,2026-11-10,2026-11-10T01:30:00Z,2026-11-09T03:24:46Z,Purdue Boilermakers,Illinois State Redbirds,True,DraftKings,spread,away,15.5,-105.0,0.5272,0.0292,0.38,10.24,158.7,-15.5,144.5,,,,,
 401922060,2026-11-10,2026-11-10T00:00:00Z,2026-11-09T05:37:24Z,Coastal Carolina Chanticleers,South Carolina Upstate Spartans,True,Draft Kings,total,over,148.5,-108.0,0.5326,0.0257,0.17,8.84,155.3,-10.5,148.5,,,,,
+401906771,2026-11-10,2026-11-10T23:00:00Z,2026-11-09T20:07:40Z,Florida State Seminoles,Florida Gators,True,DraftKings,ml,home,0.0,300.0,0.2604,0.0414,0.17,-4.81,167.0,9.5,164.5,,,,,
