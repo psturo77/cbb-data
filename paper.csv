@@ -27,3 +27,7 @@ game_id,date,start,recorded,home,away,early,book,market,side,line,price,p,ev,uni
 401924734,2026-11-08,2026-11-08T18:00:00Z,2026-11-08T02:59:15Z,Siena Saints,Princeton Tigers,True,DraftKings,spread,home,-1.5,105.0,0.5076,0.0407,0.48,2.93,148.1,-1.5,154.5,win,0.504,2.5,-4.0,Princeton Tigers 68 @ Siena Saints 82
 401929002,2026-11-09,2026-11-09T04:00:00Z,2026-11-08T16:50:01Z,Hawai'i Rainbow Warriors,UT Arlington Mavericks,True,DraftKings,total,over,148.5,-105.0,0.5266,0.0281,0.18,8.83,154.5,-8.5,148.5,,,,,
 401926132,2026-11-10,2026-11-10T01:30:00Z,2026-11-09T00:15:39Z,Purdue Boilermakers,Illinois State Redbirds,True,Draft Kings,total,over,144.5,-105.0,0.5487,0.0712,0.47,10.24,158.7,-15.5,144.5,,,,,
+401921180,2026-11-09,2026-11-09T23:30:00Z,2026-11-09T03:24:46Z,Pennsylvania Quakers,Howard Bison,True,DraftKings,total,over,158.5,-105.0,0.5313,0.0372,0.24,6.84,165.3,-5.5,158.5,,,,,
+401906759,2026-11-10,2026-11-10T00:30:00Z,2026-11-09T03:24:46Z,Alabama Crimson Tide,Oakland Golden Grizzlies,True,DraftKings,spread,away,32.5,-105.0,0.5276,0.0301,0.4,26.6,171.5,-32.5,171.5,,,,,
+401919016,2026-11-10,2026-11-10T00:30:00Z,2026-11-09T03:24:46Z,UAB Blazers,Florida A&M Rattlers,True,DraftKings,spread,home,-15.5,-105.0,0.531,0.0367,0.48,22.95,160.2,-15.5,155.5,,,,,
+401926132,2026-11-10,2026-11-10T01:30:00Z,2026-11-09T03:24:46Z,Purdue Boilermakers,Illinois State Redbirds,True,DraftKings,spread,away,15.5,-105.0,0.5272,0.0292,0.38,10.24,158.7,-15.5,144.5,,,,,
