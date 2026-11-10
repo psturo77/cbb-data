@@ -3,11 +3,11 @@ name: CBB odds pull
 # board's odds, ESPN lines, injuries, alerts, ledger recs (and the 1 PM props snapshot). Everything lands on the odds-raw
 # branch: out/batch*.json are ready-made board writes, and state/ carries the alert history and the recs already made.
 # The Claude odds task runs 5 minutes later and only copies out/batch*.json onto the board - it runs no code and holds no key.
-# Times are UTC: :12 past each hour 14-23 and 0-4 = 9:12 AM to 11:12 PM Eastern (standard time; an hour later in ET once DST starts in March).
-# The Claude odds task copies the newest build at :55 each hour; the build id in out/alerted.json lets it skip a build it already copied.
+# Times are UTC: :05 past each hour 14-23 and 0-4 = 9:05 AM to 11:05 PM Eastern (GitHub starts these 35-45 min late, so builds land around :40-:50) (standard time; an hour later in ET once DST starts in March).
+# The Claude odds task starts at :50 each hour and waits up to 16 min for that hour's build; the build id in out/alerted.json lets it skip a build it already copied.
 on:
   schedule:
-    - cron: "12 0-4,14-23 * 11,12,1,2,3,4 *"
+    - cron: "5 0-4,14-23 * 11,12,1,2,3,4 *"
   workflow_dispatch:
     inputs:
       mode:
