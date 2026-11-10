@@ -22,6 +22,7 @@ args = [a for a in sys.argv[1:] if not a.startswith("--")]
 SLATES, META, ESPN, SEEN = args[0:4]
 MIN = float(args[4]) if len(args) > 4 else 0.05
 ODDS = args[5] if len(args) > 5 else None
+UNIT_USD = float(flags.get("--unit") or 20)       # dollars per unit (board/prefs unit)
 INJ = json.load(open(flags["--inj"])).get("games", {}) if flags.get("--inj") and os.path.exists(flags["--inj"]) else {}
 DIGEST = "--digest" in flags
 if DIGEST: MIN = float(flags["--digest"] or 0.03)
@@ -73,9 +74,9 @@ for gid in set(espn) | set(ug):
         off = f" - {b['off']:g} pts better than Pinnacle" if b.get("off") else ""
         tag = "CAUTION " if warn else ""
         lines.append((b["ev"], f"{tag}{name} {price(b['price'])} ({b.get('book') or o.get('book', 'ESPN')}) - edge {b['ev']:+.1%}, "
-                               f"{b['p']:.0%} to win, {b['units']:.1f}u - {matchup}{off}" + (f" - injury: {inj}" if inj else "")))
+                               f"{b['p']:.0%} to win, bet ${b['units'] * UNIT_USD:.0f} ({b['units']:.1f}u) - {matchup}{off}" + (f" - injury: {inj}" if inj else "")))
         seen[key] = now.isoformat()
-    if mine and o.get("opt") and not DIGEST:
+    if False and mine and o.get("opt") and not DIGEST:      # arb alerts off (spread bets over 5% only, Nov 10 2026)
         for x in arbs_for(o, books):
             if not x["arb"]: continue
             def leg(l):
@@ -93,4 +94,4 @@ if DIGEST:
     print(f"digest: {len(lines)} game(s) today with a best bet at {MIN:.0%}+", file=sys.stderr); sys.exit(0)
 cut = (now - pd.Timedelta(days=14)).isoformat()
 json.dump({"alerted": {k: v for k, v in seen.items() if v >= cut}}, open(SEEN, "w"))
-print(f"{len(lines)} new alert(s) (edges {MIN:.0%}+ and arbs) across {len(set(espn) | set(ug))} games with lines", file=sys.stderr)
+print(f"{len(lines)} new alert(s) (spread edges {MIN:.0%}+) across {len(set(espn) | set(ug))} games with lines", file=sys.stderr)

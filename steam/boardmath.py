@@ -5,6 +5,7 @@ import pandas as pd
 W = dict(open=0.5, close=0.15, openEarly=0.15, closeEarly=0.0, tot=0.25, totEarly=0.2)
 CAP, CAP_TOT, MIN_EV = 6.0, 10.0, 0.02
 TOT_STAKE = 0.5    # totals staked at half (same as the board): small, over-heavy test sample; back to 1 if live CLV holds up
+MARKETS = {"spread"}   # bet types the board recommends and alerts (totals and moneylines switched off Nov 10 2026; add "total"/"ml" to restore)
 KELLY = 0.125      # stake = Kelly fraction (board default 'Cautious' 1/8, cap 1.5u; 'Standard' 1/4, cap 3u)
 Phi = lambda x: 0.5 * (1 + erf(x / sqrt(2)))
 payout = lambda p: p / 100 if p > 0 else 100 / -p
@@ -77,7 +78,7 @@ def bets_for(g, o, sdm=11.2, sdt=16.7, books=None):
         if b["market"] == "spread" and o.get("sp") is not None: return b["line"] - o["sp"] if b["side"] == "home" else b["line"] + o["sp"]
         if b["market"] == "total" and o.get("tot") is not None: return o["tot"] - b["line"] if b["side"] == "over" else b["line"] - o["tot"]
         return None
-    out = [b for b in out if (off_by(b) is None) or off_by(b) <= (SUS_TOT if b["market"] == "total" else SUS_SP)]
+    out = [b for b in out if b["market"] in MARKETS and ((off_by(b) is None) or off_by(b) <= (SUS_TOT if b["market"] == "total" else SUS_SP))]
     return sorted(out, key=lambda b: -b["ev"])
 
 SUS_SP, SUS_TOT = 2.5, 3.5
@@ -148,8 +149,8 @@ def arbs_for(o, books=None):
                 if s < 1 - 1e-9 or (w >= 1 - 1e-9 and s <= 1.06):
                     out.append(dict(kind=kind, a=(sa, a[0], a[1], bk(a[-1])), b=(sb, b[0], b[1], bk(b[-1])), width=w, sum=s, arb=s < 1 - 1e-9))
     pair(opt.get("sh"), opt.get("sa"), "spread", lambda x, y: x + y, "home", "away")
-    pair(opt.get("un"), opt.get("ov"), "total", lambda u, v: u - v, "under", "over")
-    if opt.get("mh") and opt.get("ma"):
+    if "total" in MARKETS: pair(opt.get("un"), opt.get("ov"), "total", lambda u, v: u - v, "under", "over")
+    if "ml" in MARKETS and opt.get("mh") and opt.get("ma"):
         pair([[0] + list(opt["mh"])], [[0] + list(opt["ma"])], "ml", lambda x, y: 0, "home", "away")
     return sorted(out, key=lambda x: (not x["arb"], x["sum"]))
 

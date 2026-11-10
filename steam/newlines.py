@@ -28,7 +28,7 @@ API = "https://api.the-odds-api.com/v4/sports/basketball_ncaab"
 KEY, TOPIC = os.environ.get("ODDS_API_KEY", ""), os.environ.get("NTFY_TOPIC", "")
 _bk = os.environ.get("BOOKS") or open(os.path.join(HERE, "books.txt")).read()      # same list as the steam checker
 BOOKS = [b.strip() for b in _bk.replace("\n", ",").split(",") if b.strip() and not b.strip().startswith("#") and b.strip() != "pinnacle"][:9]
-MIN_EV = float(os.environ.get("MIN_EV", "0.03")); AHEAD_H = float(os.environ.get("AHEAD_H", "40"))
+MIN_EV = float(os.environ.get("MIN_EV", "0.05")); AHEAD_H = float(os.environ.get("AHEAD_H", "40"))
 MIN_CREDITS = int(os.environ.get("MIN_CREDITS", "1500")); DRY = os.environ.get("DRY_RUN") == "1"
 STATE = os.environ.get("STATE_FILE", ".newlines_state.json"); LOG = os.path.join(HERE, "newlines.csv")
 LOGF = ["alerted", "game_id", "event_id", "start", "home", "away", "market", "side", "line", "price", "book", "ev", "p", "units",
@@ -74,7 +74,7 @@ ours = {}
 for ev in events:
     m = pairs.get((team(ev["home_team"]), team(ev["away_team"])))
     if m: ours[ev["id"]] = m
-todo = [e for e in ours if any(f"{e}|{b}|{k}" not in state for b in BOOKS for k in ("spreads", "totals"))]
+todo = [e for e in ours if any(f"{e}|{b}|{k}" not in state for b in BOOKS for k in ("spreads",))]
 if not todo:
     print(f"{len(events)} events, {len(ours)} with a model number; every line already seen - no odds pulled"); save(); sys.exit(0)
 if left is not None and int(float(left)) < MIN_CREDITS:
@@ -84,7 +84,7 @@ if left is not None and int(float(left)) < MIN_CREDITS:
 if os.environ.get("ODDS_FILE"): odds, left = json.load(open(os.environ["ODDS_FILE"])), "test"
 else:
     try:
-        odds, left = get("odds", bookmakers=",".join(["pinnacle"] + BOOKS), markets="spreads,totals", oddsFormat="american",
+        odds, left = get("odds", bookmakers=",".join(["pinnacle"] + BOOKS), markets="spreads", oddsFormat="american",
                          commenceTimeFrom=t0, commenceTimeTo=t1)
     except urllib.error.HTTPError as e:
         sys.exit(f"odds call failed: HTTP {e.code}")
@@ -119,7 +119,7 @@ for ev in odds:
     hname = ev["away_team"] if flip else ev["home_team"]; aname = ev["home_team"] if flip else ev["away_team"]
     pin_sp, pin_t = mk("pinnacle", "spreads"), mk("pinnacle", "totals")
     for book in BOOKS:
-        for key in ("spreads", "totals"):
+        for key in ("spreads",):
             k = f"{ev['id']}|{book}|{key}"
             o_ = mk(book, key)
             if not o_ or k in state: continue

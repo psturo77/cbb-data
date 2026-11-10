@@ -5,14 +5,14 @@ usage: python3 oddspull.py <api key | path to an odds.json already downloaded> <
 board/odds.json (any of the last three may be missing). Same logic as the board's "Update odds" button (cbb-board.html):
 middle-of-books consensus, best-price frontier per side among YOUR books (board/prefs), first-seen openers, earlier
 games kept 14 days, plus: Pinnacle (when it has the game) is the market reference for the line and no-vig price.
-Costs 9 credits per pull (3 markets x regions us, us2, eu).
+Costs 3 credits per pull (spreads only x regions us, us2, eu; totals and moneylines dropped Nov 10 2026).
 """
 import sys, os, re, json, glob, urllib.request, urllib.error
 import pandas as pd
 
 SRC, DB, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 log = lambda *a: print(*a, file=sys.stderr, flush=True)
-URL = ("https://api.the-odds-api.com/v4/sports/basketball_ncaab/odds?regions=us,us2,eu&markets=h2h,spreads,totals"
+URL = ("https://api.the-odds-api.com/v4/sports/basketball_ncaab/odds?regions=us,us2,eu&markets=spreads"
        "&oddsFormat=american&apiKey={}")
 load = lambda p, d=None: json.load(open(p)) if os.path.exists(p) else d
 

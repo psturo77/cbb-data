@@ -25,7 +25,7 @@ LOGF = ["alerted", "event_id", "commence", "home", "away", "market", "side", "bo
         "edge", "pin_close_point", "pin_close_price", "pin_close_at"]
 KEY = os.environ.get("ODDS_API_KEY", "")
 TOPIC = os.environ.get("NTFY_TOPIC", "")
-MIN_EV = float(os.environ.get("MIN_EV", "0.02"))
+MIN_EV = float(os.environ.get("MIN_EV", "0.05"))
 WINDOW_H = float(os.environ.get("WINDOW_H", "4"))
 MIN_CREDITS = int(os.environ.get("MIN_CREDITS", "1500"))
 DRY = os.environ.get("DRY_RUN") == "1"
@@ -83,7 +83,7 @@ else:
         save(); sys.exit(0)
     # ---- 2. one odds pull: Pinnacle + your books, spreads and totals (2 credits)
     try:
-        odds, left = get("odds", bookmakers=",".join(["pinnacle"] + books()), markets="spreads,totals",
+        odds, left = get("odds", bookmakers=",".join(["pinnacle"] + books()), markets="spreads",
                          oddsFormat="american", commenceTimeFrom=t0, commenceTimeTo=t1)
     except urllib.error.HTTPError as e:
         sys.exit(f"odds call failed: HTTP {e.code}")

@@ -69,7 +69,7 @@ if flags.get("--raw"):
             age = (now - pd.Timestamp(pj["pulled_at"])).total_seconds() / 3600
             if age > 2: notes.append(f"Odds are from the {pd.Timestamp(pj['pulled_at']).tz_convert('America/New_York'):%-I:%M %p} ET pull ({age:.1f} hours old).")
 else:
-    url = ("https://api.the-odds-api.com/v4/sports/basketball_ncaab/odds?regions=us,us2,eu&markets=h2h,spreads,totals"
+    url = ("https://api.the-odds-api.com/v4/sports/basketball_ncaab/odds?regions=us,us2,eu&markets=spreads"
            f"&oddsFormat=american&apiKey={KEY}")
     try:
         with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "CBB-model"}), timeout=60) as r:
@@ -112,6 +112,9 @@ else:
     else:
         notes.append("Injury pull failed: " + (log[-1] if log else f"exit {rc}"))
 inj = [f"--inj={inj_file}"] if inj_file else []
+try: unit = float((json.load(open(f"{DB}/board/prefs.json")) or {}).get("unit") or 20)
+except Exception: unit = 20.0
+inj += [f"--unit={unit:g}"]
 
 # ---- step 8: alerts (+ 9 AM digest)
 alerted = f"{OUT}/alerted.json"
@@ -179,8 +182,8 @@ for i, b in enumerate(batches, 1): json.dump({"writes": b}, open(f"{OUT}/batch{i
 lines = []
 if DIGEST:
     lines += ["Today's best bets:"] + digest if digest else ["Today's best bets: none at 3%+ yet."]
-if alerts: lines += ["New bets over 5%:"] + alerts
-elif not DIGEST: lines.append("No new bets over 5%.")
+if alerts: lines += ["New spread bets over 5%:"] + alerts
+elif not DIGEST: lines.append("No new spread bets over 5%.")
 lines += notes
 inj_txt = f"injuries: {inj_n} players listed" if inj_n is not None else ("injuries: saved list reused" if LIGHT else "injuries: not updated")
 ledger_txt = "ledger: skipped (quick refresh)" if LIGHT else f"ledger: {new_recs} new recs"

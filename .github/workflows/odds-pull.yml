@@ -1,12 +1,13 @@
 name: CBB odds pull
-# Three times a day: pull The Odds API (every book + Pinnacle), then run pipeline/odds_run.py here in GitHub to build the
+# Hourly, 9 AM-11 PM ET (spreads only, 3 credits a pull): pull The Odds API (every book + Pinnacle), then run pipeline/odds_run.py here in GitHub to build the
 # board's odds, ESPN lines, injuries, alerts, ledger recs (and the 1 PM props snapshot). Everything lands on the odds-raw
 # branch: out/batch*.json are ready-made board writes, and state/ carries the alert history and the recs already made.
 # The Claude odds task runs 5 minutes later and only copies out/batch*.json onto the board - it runs no code and holds no key.
-# Times are UTC: 14:12 / 18:12 / 22:12 = 9:12 AM / 1:12 PM / 5:12 PM Eastern (standard time; an hour later in ET once DST starts in March).
+# Times are UTC: :12 past each hour 14-23 and 0-4 = 9:12 AM to 11:12 PM Eastern (standard time; an hour later in ET once DST starts in March).
+# The Claude odds task copies the newest build at :55 each hour; the build id in out/alerted.json lets it skip a build it already copied.
 on:
   schedule:
-    - cron: "12 14,18,22 * 11,12,1,2,3,4 *"
+    - cron: "12 0-4,14-23 * 11,12,1,2,3,4 *"
   workflow_dispatch:
     inputs:
       mode:
@@ -42,7 +43,7 @@ jobs:
           python3 - <<'PY'
           import os, json, urllib.request, urllib.error, datetime
           key = os.environ["ODDS_API_KEY"]
-          url = ("https://api.the-odds-api.com/v4/sports/basketball_ncaab/odds?regions=us,us2,eu&markets=h2h,spreads,totals"
+          url = ("https://api.the-odds-api.com/v4/sports/basketball_ncaab/odds?regions=us,us2,eu&markets=spreads"
                  f"&oddsFormat=american&apiKey={key}")
           meta = {"pulled_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
           try:
@@ -106,6 +107,8 @@ jobs:
           if [ -f /tmp/out/board_odds.json ]; then cp /tmp/out/board_odds.json /tmp/raw/state/odds.json; elif [ -f /tmp/prev/state/odds.json ]; then cp /tmp/prev/state/odds.json /tmp/raw/state/; fi
           [ -f /tmp/prev/state/prefs.json ] && cp /tmp/prev/state/prefs.json /tmp/raw/state/ || true
           echo "{\"mode\":\"$MODE\", \"built_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"run\": \"${{ github.run_id }}\"}" > /tmp/raw/out/run.json
+          # stamp the build id into the board's alerts doc, so the copy task can tell a build it already copied (and never re-sends its alerts)
+          [ -f /tmp/raw/out/alerted.json ] && python3 -c "import json,sys; f=sys.argv[1]; d=json.load(open(f)); d['build']=sys.argv[2]; json.dump(d, open(f,'w'))" /tmp/raw/out/alerted.json "${{ github.run_id }}" || true
           cat /tmp/raw/out/reply.txt 2>/dev/null || cat /tmp/out_failed
       - name: Publish to the odds-raw branch
         run: |
