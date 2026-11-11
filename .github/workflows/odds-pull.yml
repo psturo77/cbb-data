@@ -1,13 +1,14 @@
 name: CBB odds pull
-# Hourly, 9 AM-11 PM ET (spreads only, 3 credits a pull): pull The Odds API (every book + Pinnacle), then run pipeline/odds_run.py here in GitHub to build the
+# Every 30 minutes, 9 AM-11:30 PM ET (spreads only, 3 credits a pull): pull The Odds API (every book + Pinnacle), then run pipeline/odds_run.py here in GitHub to build the
 # board's odds, ESPN lines, injuries, alerts, ledger recs (and the 1 PM props snapshot). Everything lands on the odds-raw
 # branch: out/batch*.json are ready-made board writes, and state/ carries the alert history and the recs already made.
 # The Claude odds task runs 5 minutes later and only copies out/batch*.json onto the board - it runs no code and holds no key.
-# Times are UTC: :05 past each hour 14-23 and 0-4 = 9:05 AM to 11:05 PM Eastern (GitHub starts these 35-45 min late, so builds land around :40-:50) (standard time; an hour later in ET once DST starts in March).
-# The Claude odds task starts at :50 each hour and waits up to 16 min for that hour's build; the build id in out/alerted.json lets it skip a build it already copied.
+# Times are UTC: :05 and :35 past each hour 14-23 and 0-4 = 9:05 AM to 11:35 PM Eastern (GitHub starts these 25-50 min late, and sometimes skips one) (standard time; an hour later in ET once DST starts in March).
+# The Claude odds task starts at :50 each hour, waits up to 16 min for a build it hasn't copied (build id in out/alerted.json), and sends every alert in
+# out/alert_log.json from builds newer than the one it last copied - so alerts from a build it never copied are still sent.
 on:
   schedule:
-    - cron: "5 0-4,14-23 * 11,12,1,2,3,4 *"
+    - cron: "5,35 0-4,14-23 * 11,12,1,2,3,4 *"
   workflow_dispatch:
     inputs:
       mode:
@@ -78,6 +79,8 @@ jobs:
           FORCE: ${{ inputs.props == true && '1' || '0' }}
         run: |
           if [ "$FORCE" != "1" ] && [ "$(TZ=America/New_York date +%H)" != "13" ]; then echo "not the 1 PM run"; exit 0; fi
+          if [ "$FORCE" != "1" ] && [ "$(cat /tmp/prev/state/props_day.txt 2>/dev/null)" = "$(TZ=America/New_York date +%F)" ]; then echo "props already snapped today"; exit 0; fi
+          TZ=America/New_York date +%F > /tmp/props_day.txt
           [ -f /tmp/db/board/props.json ] || { echo "no props projections"; exit 0; }
           python3 pipeline/props_snap.py /tmp/db/board/props.json /tmp/db/board/teammap.json /tmp/db/prop /tmp/raw/prop 60 || echo "props snapshot failed"
       - name: Build the board writes
@@ -85,6 +88,9 @@ jobs:
           MODE: ${{ inputs.mode || 'scheduled' }}
         run: |
           flag=""; [ "$MODE" = "manual" ] && flag="--manual"; [ "$MODE" = "quick" ] && flag="--light"
+          today=$(TZ=America/New_York date +%F)
+          # one morning summary a day (two runs can land in the 9 AM hour)
+          if [ "$(cat /tmp/prev/state/digest_day.txt 2>/dev/null)" = "$today" ]; then flag="$flag --no-digest"; fi
           python3 pipeline/odds_run.py /tmp/db /tmp/out --raw-dir=/tmp/raw $flag || echo "odds_run failed" > /tmp/out_failed
           mkdir -p /tmp/raw/out /tmp/raw/state/rec /tmp/raw/state/prop
           cp -r /tmp/out/. /tmp/raw/out/ 2>/dev/null || true
@@ -106,6 +112,19 @@ jobs:
           if [ -f /tmp/out/board_injuries.json ]; then cp /tmp/out/board_injuries.json /tmp/raw/state/injuries.json; elif [ -f /tmp/prev/state/injuries.json ]; then cp /tmp/prev/state/injuries.json /tmp/raw/state/; fi
           if [ -f /tmp/out/board_odds.json ]; then cp /tmp/out/board_odds.json /tmp/raw/state/odds.json; elif [ -f /tmp/prev/state/odds.json ]; then cp /tmp/prev/state/odds.json /tmp/raw/state/; fi
           [ -f /tmp/prev/state/prefs.json ] && cp /tmp/prev/state/prefs.json /tmp/raw/state/ || true
+          # once-a-day stamps
+          if [ "$MODE" = "scheduled" ] && [ "$(TZ=America/New_York date +%H)" = "09" ]; then echo "$today" > /tmp/raw/state/digest_day.txt; else cp /tmp/prev/state/digest_day.txt /tmp/raw/state/ 2>/dev/null || true; fi
+          if [ -f /tmp/props_day.txt ]; then cp /tmp/props_day.txt /tmp/raw/state/props_day.txt; else cp /tmp/prev/state/props_day.txt /tmp/raw/state/ 2>/dev/null || true; fi
+          # alert log: every build's new alerts (last 48 builds), so the copy task can send alerts from builds it never copied
+          python3 - "${{ github.run_id }}" <<'PY'
+          import json, os, sys, datetime
+          prev = "/tmp/prev/state/alert_log.json"
+          log = json.load(open(prev)) if os.path.exists(prev) else []
+          lines = [l.rstrip("\n") for l in open("/tmp/out/alerts.txt")] if os.path.exists("/tmp/out/alerts.txt") else []
+          log.append({"run": sys.argv[1], "built_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "alerts": [l for l in lines if l.strip()]})
+          log = log[-48:]
+          for f in ("/tmp/raw/state/alert_log.json", "/tmp/raw/out/alert_log.json"): json.dump(log, open(f, "w"), indent=1)
+          PY
           echo "{\"mode\":\"$MODE\", \"built_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"run\": \"${{ github.run_id }}\"}" > /tmp/raw/out/run.json
           # stamp the build id into the board's alerts doc, so the copy task can tell a build it already copied (and never re-sends its alerts)
           [ -f /tmp/raw/out/alerted.json ] && python3 -c "import json,sys; f=sys.argv[1]; d=json.load(open(f)); d['build']=sys.argv[2]; json.dump(d, open(f,'w'))" /tmp/raw/out/alerted.json "${{ github.run_id }}" || true

@@ -31,7 +31,7 @@ for kv in filter(None, flags.get("--versions", "").split(",")):
 os.makedirs(f"{OUT}/rec", exist_ok=True); os.makedirs(f"{OUT}/prop", exist_ok=True)
 now = pd.Timestamp.now(tz="UTC"); et = now.tz_convert("America/New_York")
 MANUAL = "--manual" in flags or LIGHT          # started from the board's button: no morning summary, no props
-DIGEST = (et.hour == 9 and not MANUAL) or "--force-digest" in flags
+DIGEST = (et.hour == 9 and not MANUAL and "--no-digest" not in flags) or "--force-digest" in flags
 PROPS = (et.hour == 13 and not MANUAL) or "--force-props" in flags
 RAWDIR = flags.get("--raw-dir")
 if RAWDIR: flags["--raw"] = os.path.join(RAWDIR, "raw.json")
@@ -122,6 +122,7 @@ if os.path.exists(f"{DB}/board/alerts.json"): shutil.copy(f"{DB}/board/alerts.js
 alert_odds = [f"{OUT}/board_odds.json"] if status["odds_ok"] else []
 rc, out, log = run(["alerts.py", f"{DB}/slate", f"{DB}/board/meta.json", espn_file, alerted, "0.05"] + alert_odds + inj)
 alerts = [l for l in out.splitlines() if l.strip()] if rc == 0 else []
+open(f"{OUT}/alerts.txt", "w").write("".join(l + "\n" for l in alerts))   # this build's new alerts (the workflow keeps a log of them)
 if rc != 0: notes.append("Alerts failed: " + (log[-1] if log else f"exit {rc}"))
 digest = None
 if DIGEST:
