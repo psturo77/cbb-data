@@ -20,6 +20,10 @@ on:
         description: "Also snapshot player props"
         type: boolean
         default: false
+      ntfy_test:
+        description: "Send a test notification to the ntfy topic"
+        type: boolean
+        default: false
 
 concurrency:
   group: odds-pull
@@ -129,6 +133,27 @@ jobs:
           # stamp the build id into the board's alerts doc, so the copy task can tell a build it already copied (and never re-sends its alerts)
           [ -f /tmp/raw/out/alerted.json ] && python3 -c "import json,sys; f=sys.argv[1]; d=json.load(open(f)); d['build']=sys.argv[2]; json.dump(d, open(f,'w'))" /tmp/raw/out/alerted.json "${{ github.run_id }}" || true
           cat /tmp/raw/out/reply.txt 2>/dev/null || cat /tmp/out_failed
+      - name: Send new bets to ntfy
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_TEST: ${{ inputs.ntfy_test == true && '1' || '0' }}
+        run: |
+          python3 - <<'PY'
+          import os, urllib.request
+          topic = os.environ.get("NTFY_TOPIC", "").strip()
+          if not topic: print("no NTFY_TOPIC secret - skipped"); raise SystemExit(0)
+          lines = [l.strip() for l in open("/tmp/out/alerts.txt")] if os.path.exists("/tmp/out/alerts.txt") else []
+          lines = [l for l in lines if l]
+          if os.environ.get("NTFY_TEST") == "1" and not lines:
+              lines = ["Test: CBB spread alerts are connected. New 5%+ spread bets will arrive here."]
+          if not lines: print("no new bets"); raise SystemExit(0)
+          title = f"{len(lines)} new spread bet{'s' if len(lines) > 1 else ''} over 5%" if not lines[0].startswith("Test:") else "CBB alerts test"
+          req = urllib.request.Request(f"https://ntfy.sh/{topic}", data="\n\n".join(lines[:8]).encode(), method="POST",
+                                       headers={"Title": title, "Priority": "high", "Tags": "basketball",
+                                                "Click": "https://claude.ai/artifact/SgPtmedZ2wVPiYHaJoRNZh"})
+          try: urllib.request.urlopen(req, timeout=20).read(); print(f"sent {len(lines)} line(s)")
+          except Exception as e: print("ntfy send failed:", type(e).__name__)
+          PY
       - name: Publish to the odds-raw branch
         run: |
           cd /tmp/raw
