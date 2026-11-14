@@ -2,7 +2,7 @@
 
 usage: python3 grade_recs.py <hoopR-mbb-data/mbb dir> <repo dir> <folder of rec docs>
 <folder of rec docs> holds the board's "rec" collection as saved by ArtifactData (one <id>.json per recommendation).
-Writes <repo>/recs.csv (every rec, with result, units won at the rec's own stake, closing line and CLV from lines.csv)
+Writes <repo>/recs.csv (every rec, with result, units won at the rec's own stake, closing line, CLV and market move from lines.csv)
 and prints a one-line summary: record, ROI, beat-the-close rate - overall and by market.
 """
 import sys, os, re, glob, json
@@ -21,7 +21,14 @@ season = max(int(re.search(r"_(\d{4})\.parquet$", f).group(1)) for f in glob.glo
 S = pd.read_parquet(f"{SRC}/schedules/parquet/mbb_schedule_{season}.parquet")
 S = S[S.status_type_completed == True].copy(); S["game_id"] = S.game_id.astype(str); S = S.set_index("game_id")
 L = pd.read_csv(f"{REPO}/lines.csv", dtype={"game_id": str}).drop_duplicates("game_id", keep="last").set_index("game_id") if os.path.exists(f"{REPO}/lines.csv") else pd.DataFrame()
-for c in ("result", "units_won", "final", "close", "clv"): R[c] = None
+for c in ("result", "units_won", "final", "close", "clv", "mv"): R[c] = None
+for c in ("mkt_sp", "mkt_tot"):
+    if c not in R: R[c] = None
+# Two measures against the close (Nov 14 2026):
+#   clv = the rec's own number vs the close. A book hanging a line 2 pts off the market "beats the close" by 2 even if the market never moves.
+#   mv  = how far the market itself moved the rec's way: the close vs the market line when the rec was made (mkt_sp / mkt_tot).
+#         This is the line-value test the scorecard and its stop rule use. (Market at rec is the board's line - Pinnacle or the books'
+#         median; the close is DraftKings via ESPN, so expect some noise between the two sources.)
 for i, r in R.iterrows():
     if r.game_id not in S.index: continue
     s = S.loc[r.game_id]; m = float(s.home_score) - float(s.away_score); t = float(s.home_score) + float(s.away_score)
@@ -37,39 +44,43 @@ for i, r in R.iterrows():
         if r.market == "spread" and pd.notna(l.spread_close):
             sp = -l.spread_close if flip else l.spread_close
             R.at[i, "close"] = sp; R.at[i, "clv"] = round(r.line - sp if r.side == "home" else r.line + sp, 2)
+            if pd.notna(r.mkt_sp): R.at[i, "mv"] = round((r.mkt_sp - sp) if r.side == "home" else (sp - r.mkt_sp), 2)
         elif r.market == "total" and pd.notna(l.total_close):
             R.at[i, "close"] = l.total_close; R.at[i, "clv"] = round((l.total_close - r.line) if r.side == "over" else (r.line - l.total_close), 2)
+            if pd.notna(r.mkt_tot): R.at[i, "mv"] = round((l.total_close - r.mkt_tot) if r.side == "over" else (r.mkt_tot - l.total_close), 2)
 cols = ["id", "game_id", "rec_at", "start", "home", "away", "neutral", "early", "hours_to_tip", "market", "side", "line", "price", "book", "ev", "p",
         "units", "off_pinnacle", "timing", "prime", "caution", "model_pm", "model_pt", "injury_adj", "mkt_sp", "mkt_tot", "anchor", "open_sp", "open_tot",
-        "result", "units_won", "final", "close", "clv"]
+        "result", "units_won", "final", "close", "clv", "mv"]
 R = R.reindex(columns=cols).sort_values(["start", "id"])
 R.to_csv(f"{REPO}/recs.csv", index=False)
 G = R[R.result.isin(["win", "loss", "push"])]
 def summ(g):
     w, l = (g.result == "win").sum(), (g.result == "loss").sum(); st = g.units.sum()
-    clv = pd.to_numeric(g.clv, errors="coerce").dropna()
+    mv = pd.to_numeric(g.mv, errors="coerce").dropna()
     return (f"{w}-{l}" + (f", ROI {pd.to_numeric(g.units_won).sum() / st:+.1%}" if st else "")
-            + (f", beat close {(clv > 0).mean():.0%}" if len(clv) else ""))
+            + (f", market moved our way {(mv > 0).mean():.0%}" if len(mv) else ""))
 parts = [f"{mk} {summ(G[G.market == mk])}" for mk in ("spread", "total", "ml") if (G.market == mk).any()]
 if "prime" in G and G.prime.fillna(False).astype(bool).any(): parts.append(f"PRIME {summ(G[G.prime.fillna(False).astype(bool)])}")
-# ---- closing-line scoreboard: CLV is the real test (a few hundred bets settle it; win-loss needs thousands)
+# ---- closing-line scoreboard: line value is the real test (a few hundred bets settle it; win-loss needs thousands).
+# Judged on mv (market move since the rec), not clv - see above.
 def clvstats(g):
-    c = pd.to_numeric(g.clv, errors="coerce").dropna()
+    c = pd.to_numeric(g.mv, errors="coerce").dropna()
     return dict(n=int(len(c)), avg=round(float(c.mean()), 2) if len(c) else None, beat=round(float((c > 0).mean()), 3) if len(c) else None,
                 same=round(float((c == 0).mean()), 3) if len(c) else None)
-Rc = R[pd.to_numeric(R.clv, errors="coerce").notna()].sort_values("start")
+Rc = R[pd.to_numeric(R.mv, errors="coerce").notna()].sort_values("start")
 sp = Rc[Rc.market == "spread"]; last = sp.tail(200)
 st = clvstats(last)
 # stop rule on spreads (totals points are worth about half as much): judged on the last 200 once 100+ have a closing line
 status = "early" if st["n"] < 100 else "stop" if st["avg"] < 0.5 else "watch" if st["avg"] < 1.0 else "ok"
-card = dict(updated=pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ"), status=status, rule="last 200 spread recs: average CLV under +0.5 pts = stop and re-check; under +1.0 = watch",
+card = dict(updated=pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ"), status=status, rule="last 200 spread recs: average market move under +0.5 pts = stop and re-check; under +1.0 = watch",
+            measure="market move: the close vs the market line when the rec was made (not the rec's own number vs the close)",
             spread_last200=st, spread_all=clvstats(sp), total_all=clvstats(Rc[Rc.market == "total"]),
             prime=clvstats(Rc[Rc.prime.fillna(False).astype(bool)]) if "prime" in Rc else None,
             record=dict(w=int((G.result == "win").sum()), l=int((G.result == "loss").sum()), p=int((G.result == "push").sum()),
                         units=round(float(pd.to_numeric(G.units_won).sum()), 2), staked=round(float(G.units.sum()), 2)),
             close_source="DraftKings close via ESPN (lines.csv)")
 # compact graded-rec feed for the artifact's Stats tab: one array per graded rec, newest 1500 (keeps the doc well under the size limit)
-# [date(ET), market, side, line, price, units, units_won, result, clv, ev, p, prime, early, hours_to_tip, caution, book]
+# [date(ET), market, side, line, price, units, units_won, result, clv, ev, p, prime, early, hours_to_tip, caution, book, mv]
 def _n(x, d=3):
     try:
         v = float(x); return None if v != v else round(v, d)
@@ -79,10 +90,10 @@ for _, r in G.sort_values("start").iterrows():
     dt = pd.Timestamp(r.start).tz_convert("America/New_York").strftime("%Y-%m-%d") if pd.notna(r.start) else None
     rows.append([dt, r.market, r.side, _n(r.line, 1), _n(r.price, 0), _n(r.units, 2), _n(r.units_won, 3), r.result, _n(r.clv, 2), _n(r.ev, 3), _n(r.p, 3),
                  int(bool(r.prime)) if pd.notna(r.prime) else 0, int(bool(r.early)) if pd.notna(r.early) else 0, _n(r.hours_to_tip, 1),
-                 1 if pd.notna(r.get("caution")) and r.get("caution") else 0, r.book])
-card["cols"] = ["date", "market", "side", "line", "price", "units", "won", "result", "clv", "ev", "p", "prime", "early", "hrs", "caution", "book"]
+                 1 if pd.notna(r.get("caution")) and r.get("caution") else 0, r.book, _n(r.mv, 2)])
+card["cols"] = ["date", "market", "side", "line", "price", "units", "won", "result", "clv", "ev", "p", "prime", "early", "hrs", "caution", "book", "mv"]
 card["rows"] = rows[-1500:]
 json.dump(card, open(f"{REPO}/scorecard.json", "w"), separators=(",", ":"))
 avg_txt = "-" if st["avg"] is None else f"{st['avg']:+.2f}"; beat_txt = "-" if st["beat"] is None else f"{st['beat']:.0%}"
-print(f"board recs CLV: status {status.upper()} | spreads last {st['n']}: avg CLV {avg_txt} pts, beat close {beat_txt}", file=sys.stderr)
+print(f"board recs line value: status {status.upper()} | spreads last {st['n']}: market moved our way {avg_txt} pts avg, {beat_txt} of recs", file=sys.stderr)
 print(f"board recs: {len(R)} recorded, {len(G)} graded" + (f": {summ(G)}" if len(G) else "") + (f" ({'; '.join(parts)})" if parts else ""), file=sys.stderr)
