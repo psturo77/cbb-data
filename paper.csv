@@ -62,3 +62,5 @@ game_id,date,start,recorded,home,away,early,book,market,side,line,price,p,ev,uni
 401909503,2026-11-14,2026-11-14T02:00:00Z,2026-11-13T20:07:50Z,Northwestern Wildcats,DePaul Blue Demons,True,DraftKings,spread,home,-1.5,105.0,0.4987,0.0222,0.26,0.93,139.1,-1.5,136.5,loss,-0.26,-1.5,0.0,DePaul Blue Demons 67 @ Northwestern Wildcats 47
 401923303,2026-11-14,2026-11-14T18:00:00Z,2026-11-14T03:26:14Z,Maine Black Bears,Drexel Dragons,True,DraftKings,spread,home,4.5,-102.0,0.5321,0.0537,0.68,2.16,133.5,4.5,129.5,,,,,
 401911455,2026-11-15,2026-11-15T03:00:00Z,2026-11-14T05:26:40Z,Nevada Wolf Pack,Utah Valley Wolverines,True,DraftKings,spread,home,-10.5,-102.0,0.5152,0.0203,0.26,13.35,159.8,-10.5,152.5,,,,,
+401920750,2026-11-14,2026-11-14T18:00:00Z,2026-11-14T14:39:46Z,Youngstown State Penguins,Marshall Thundering Herd,True,Draft Kings,spread,home,-1.5,110.0,0.4993,0.0485,0.55,0.88,162.0,-1.5,159.5,,,,,
+401920915,2026-11-14,2026-11-14T19:00:00Z,2026-11-14T14:39:46Z,Bellarmine Knights,Northern Illinois Huskies,True,Draft Kings,spread,away,-1.5,105.0,0.4993,0.0235,0.28,-1.06,153.5,1.5,149.5,,,,,
