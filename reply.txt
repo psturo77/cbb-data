@@ -1,0 +1,12 @@
+espn_schedule: ESPN lists 2260 games 14 days back to 28 ahead (1511 upcoming); hoopR had 2260; added 0, 2262 start-time/status/score updates; mbb_schedule_2027.parquet now 6072 games
+espn_schedule: ratings coverage, last 3 days: 145 of 145 Division I finals have hoopR box scores
+Games through 2026-11-13; 23479 training games
+Ratings: 2026-27 through 2026-11-13; HCA 2.11-5.63
+Spread model: rating coef 0.932, missing-players coef -0.110, sigma_margin 11.19
+Closing lines saved: 0 new; upcoming games with ESPN lines: 59; teams with Miss > 0: 53
+players: 639 teams, 4099 players (361 teams from this season); coef -0.110; 191 KB
+props_proj: 1225 player projections for 116 games (2026-11-14 - 2026-11-15); 83 KB
+Today's slate: 71 games
+board recs: 215 recorded, 206 graded: 99-105, ROI -5.4%, market moved our way 32% (spread 52-48, ROI -2.5%, market moved our way 36%; total 43-54, ROI -14.0%, market moved our way 28%; ml 4-3, ROI +30.9%; PRIME 13-16, ROI -9.9%, market moved our way 30%)
+props: 129 recorded, 127 graded | lean 0-1.5: 60 props, right 57%, flat ROI +5.5%; lean 1.5-3: 47 props, right 53%, flat ROI +4.2%; lean 3-99: 20 props, right 65%, flat ROI +15.9%
+Board updated.

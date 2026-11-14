@@ -1,0 +1,148 @@
+{
+ "writes": [
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-20",
+   "file_path": "files/slate__d2026-11-20.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-21",
+   "file_path": "files/slate__d2026-11-21.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-22",
+   "file_path": "files/slate__d2026-11-22.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-23",
+   "file_path": "files/slate__d2026-11-23.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-24",
+   "file_path": "files/slate__d2026-11-24.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-25",
+   "file_path": "files/slate__d2026-11-25.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-26",
+   "file_path": "files/slate__d2026-11-26.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-27",
+   "file_path": "files/slate__d2026-11-27.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-28",
+   "file_path": "files/slate__d2026-11-28.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-29",
+   "file_path": "files/slate__d2026-11-29.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-30",
+   "file_path": "files/slate__d2026-11-30.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-01",
+   "file_path": "files/slate__d2026-12-01.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-02",
+   "file_path": "files/slate__d2026-12-02.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-03",
+   "file_path": "files/slate__d2026-12-03.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-04",
+   "file_path": "files/slate__d2026-12-04.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-05",
+   "file_path": "files/slate__d2026-12-05.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-06",
+   "file_path": "files/slate__d2026-12-06.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-07",
+   "file_path": "files/slate__d2026-12-07.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-08",
+   "file_path": "files/slate__d2026-12-08.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-09",
+   "file_path": "files/slate__d2026-12-09.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-10",
+   "file_path": "files/slate__d2026-12-10.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-11",
+   "file_path": "files/slate__d2026-12-11.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-12",
+   "file_path": "files/slate__d2026-12-12.json"
+  },
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "runlog",
+   "file_path": "files/board__runlog.json"
+  }
+ ]
+}
