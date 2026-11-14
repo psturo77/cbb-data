@@ -19,6 +19,24 @@ def chances(mean, need, sd):
     w = Phi(x / sd); return w, 1 - w
 
 
+# A book's head start over the market line (Pinnacle, or the books' median) is credited in full up to OFF_FULL pts and at OFF_K beyond.
+# Live rec ledger, Nov 1-13 (102 graded spreads): lines up to 1 pt better than the market went 36-27 and closed +1.9 pts our way;
+# lines 1.5+ pts better went 16-21 and closed only +0.9 - the extra head start didn't hold up. So those lines are priced as if
+# 1 pt better, not skipped. Same as the board's credLine. Refit at the reviews (Nov 16, 200+ spreads).
+OFF_FULL, OFF_K = 1.0, 0.0
+def off_market(market, side, L, o):
+    if market == "spread" and o.get("sp") is not None: return L - o["sp"] if side == "home" else L + o["sp"]
+    if market == "total" and o.get("tot") is not None: return o["tot"] - L if side == "over" else L - o["tot"]
+    return None
+def cred_cut(market, side, L, o):
+    v = off_market(market, side, L, o)
+    return (1 - OFF_K) * (v - OFF_FULL) if v is not None and v > OFF_FULL + 1e-9 else 0.0
+def credited_line(market, side, L, o):
+    """the line used to price a bet: the book's line, less any head start over the market beyond OFF_FULL pts"""
+    x = cred_cut(market, side, L, o)
+    return L if not x else (L + x if market == "total" and side == "over" else L - x)
+
+
 def fair(g, o, sdm=11.2):
     """The board's fair numbers for a game at odds record o: fair home margin, fair total, fair home win chance."""
     seen, start = pd.Timestamp(o["seen"]), pd.Timestamp(g["start"])
@@ -54,9 +72,9 @@ def bets_for(g, o, sdm=11.2, sdt=16.7, books=None):
     out = []
     if fm is not None:
         for L, P, i in opts("sh", [o.get("sp"), o.get("spp") or -110]):
-            w_, l_ = chances(fm, -L, sdm); out.append(dict(market="spread", side="home", line=L, price=P, book=bk(i), p=w_, ev=w_ * payout(P) - l_))
+            w_, l_ = chances(fm, -credited_line("spread", "home", L, o), sdm); out.append(dict(market="spread", side="home", line=L, price=P, book=bk(i), p=w_, ev=w_ * payout(P) - l_, cut=cred_cut("spread", "home", L, o)))
         for L, P, i in opts("sa", [-o["sp"], o.get("spa") or o.get("spp") or -110]):
-            w_, l_ = chances(-fm, -L, sdm); out.append(dict(market="spread", side="away", line=L, price=P, book=bk(i), p=w_, ev=w_ * payout(P) - l_))
+            w_, l_ = chances(-fm, -credited_line("spread", "away", L, o), sdm); out.append(dict(market="spread", side="away", line=L, price=P, book=bk(i), p=w_, ev=w_ * payout(P) - l_, cut=cred_cut("spread", "away", L, o)))
     if ph is not None:
         for side, x, q in (("home", opt.get("mh") or ([o["mlh"], None] if o.get("mlh") is not None else None), ph),
                            ("away", opt.get("ma") or ([o["mla"], None] if o.get("mla") is not None else None), 1 - ph)):
@@ -64,16 +82,16 @@ def bets_for(g, o, sdm=11.2, sdt=16.7, books=None):
                 out.append(dict(market="ml", side=side, line=0.0, price=x[0], book=bk(x[1]), p=q, ev=q * payout(x[0]) - (1 - q)))
     if ft is not None:
         for L, P, i in opts("ov", [o.get("tot"), o.get("op") or -110]):
-            w_, l_ = chances(ft, L, sdt); out.append(dict(market="total", side="over", line=L, price=P, book=bk(i), p=w_, ev=w_ * payout(P) - l_))
+            w_, l_ = chances(ft, credited_line("total", "over", L, o), sdt); out.append(dict(market="total", side="over", line=L, price=P, book=bk(i), p=w_, ev=w_ * payout(P) - l_, cut=cred_cut("total", "over", L, o)))
         for L, P, i in opts("un", [o.get("tot"), o.get("up") or -110]):
-            w_, l_ = chances(-ft, -L, sdt); out.append(dict(market="total", side="under", line=L, price=P, book=bk(i), p=w_, ev=w_ * payout(P) - l_))
+            w_, l_ = chances(-ft, -credited_line("total", "under", L, o), sdt); out.append(dict(market="total", side="under", line=L, price=P, book=bk(i), p=w_, ev=w_ * payout(P) - l_, cut=cred_cut("total", "under", L, o)))
     for b in out:
         b["units"] = (TOT_STAKE if b["market"] == "total" else 1.0) * max(0.0, min(12 * KELLY, 100 * KELLY * b["ev"] / payout(b["price"])))
         if o.get("anchor"):        # a book 1+ pt better for you than Pinnacle
             v = (b["line"] - o["sp"] if b["side"] == "home" else b["line"] + o["sp"]) if b["market"] == "spread" else \
                 (o["tot"] - b["line"] if b["side"] == "over" else b["line"] - o["tot"]) if b["market"] == "total" else None
             if v is not None and v >= 1 - 1e-9: b["off"] = v
-    # a book more than SUS_SP (1 pt) better than the market on a spread (3.5 on a total) is usually stale or knows less than the market: not a bet (same as the board)
+    # bad-data guard only: a line more than SUS_SP (5 pts) better than the market on a spread (7 on a total) is a feed error, not a bet (same as the board)
     def off_by(b):
         if b["market"] == "spread" and o.get("sp") is not None: return b["line"] - o["sp"] if b["side"] == "home" else b["line"] + o["sp"]
         if b["market"] == "total" and o.get("tot") is not None: return o["tot"] - b["line"] if b["side"] == "over" else b["line"] - o["tot"]
@@ -81,10 +99,9 @@ def bets_for(g, o, sdm=11.2, sdt=16.7, books=None):
     out = [b for b in out if b["market"] in MARKETS and ((off_by(b) is None) or off_by(b) <= (SUS_TOT if b["market"] == "total" else SUS_SP))]
     return sorted(out, key=lambda b: -b["ev"])
 
-# Spread cutoff lowered from 2.5 to 1 pt (Nov 14 2026): in the live rec ledger (102 graded spreads), recs at a line up to 1 pt better than
-# the market went 36-27 (+5.8u) and the market moved toward them (+1.1 pts); recs 1.5+ pts better went 16-21 (-7.8u) and the market
-# moved 1.1 pts against them. Same as the board's SUS_SP.
-SUS_SP, SUS_TOT = 1.0, 3.5
+# Bad-data guard only (Nov 14 2026, replacing the 1-pt cutoff earlier that day): gaps under this are priced with credited_line, not
+# skipped. Same as the board's SUS_SP / SUS_TOT.
+SUS_SP, SUS_TOT = 5.0, 7.0
 
 CAL_MIN = 20
 def market_cal(games, odds_games, min_n=CAL_MIN):
