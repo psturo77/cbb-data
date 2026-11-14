@@ -1,0 +1,11 @@
+{
+  "books": [
+    "betmgm",
+    "williamhill_us",
+    "draftkings",
+    "fanatics",
+    "fanduel"
+  ],
+  "minEv": 0.05,
+  "unit": 20
+}

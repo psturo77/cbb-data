@@ -1,0 +1,28 @@
+{
+ "writes": [
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "odds",
+   "file_path": "out/board_odds.json"
+  },
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "espn",
+   "file_path": "out/board_espn.json"
+  },
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "injuries",
+   "file_path": "out/board_injuries.json"
+  },
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "alerts",
+   "file_path": "out/alerted.json"
+  }
+ ]
+}
