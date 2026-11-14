@@ -73,7 +73,7 @@ def bets_for(g, o, sdm=11.2, sdt=16.7, books=None):
             v = (b["line"] - o["sp"] if b["side"] == "home" else b["line"] + o["sp"]) if b["market"] == "spread" else \
                 (o["tot"] - b["line"] if b["side"] == "over" else b["line"] - o["tot"]) if b["market"] == "total" else None
             if v is not None and v >= 1 - 1e-9: b["off"] = v
-    # a book 2.5+ pts better than the market on a spread (3.5+ on a total) is almost always stale or bad data: not a bet (same as the board)
+    # a book more than SUS_SP (1 pt) better than the market on a spread (3.5 on a total) is usually stale or knows less than the market: not a bet (same as the board)
     def off_by(b):
         if b["market"] == "spread" and o.get("sp") is not None: return b["line"] - o["sp"] if b["side"] == "home" else b["line"] + o["sp"]
         if b["market"] == "total" and o.get("tot") is not None: return o["tot"] - b["line"] if b["side"] == "over" else b["line"] - o["tot"]
@@ -81,7 +81,10 @@ def bets_for(g, o, sdm=11.2, sdt=16.7, books=None):
     out = [b for b in out if b["market"] in MARKETS and ((off_by(b) is None) or off_by(b) <= (SUS_TOT if b["market"] == "total" else SUS_SP))]
     return sorted(out, key=lambda b: -b["ev"])
 
-SUS_SP, SUS_TOT = 2.5, 3.5
+# Spread cutoff lowered from 2.5 to 1 pt (Nov 14 2026): in the live rec ledger (102 graded spreads), recs at a line up to 1 pt better than
+# the market went 36-27 (+5.8u) and the market moved toward them (+1.1 pts); recs 1.5+ pts better went 16-21 (-7.8u) and the market
+# moved 1.1 pts against them. Same as the board's SUS_SP.
+SUS_SP, SUS_TOT = 1.0, 3.5
 
 CAL_MIN = 20
 def market_cal(games, odds_games, min_n=CAL_MIN):
