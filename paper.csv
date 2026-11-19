@@ -84,3 +84,4 @@ game_id,date,start,recorded,home,away,early,book,market,side,line,price,p,ev,uni
 401916318,2026-11-20,2026-11-20T00:00:00Z,2026-11-19T03:28:58Z,Ohio State Buckeyes,UMBC Retrievers,False,Draft Kings,spread,away,33.5,-115.0,0.5924,0.1074,1.5,27.23,155.4,-33.5,159.5,,,,,
 401923304,2026-11-20,2026-11-20T00:00:00Z,2026-11-19T05:36:37Z,Quinnipiac Bobcats,Maine Black Bears,False,DraftKings,spread,away,10.5,-108.0,0.5344,0.0293,0.4,8.56,139.2,-10.5,136.5,,,,,
 401926773,2026-11-20,2026-11-20T04:00:00Z,2026-11-19T05:36:37Z,USC Trojans,Tarleton State Texans,True,DraftKings,spread,home,-26.5,-105.0,0.5244,0.0238,0.31,31.53,160.9,-26.5,159.5,,,,,
+401919050,2026-11-20,2026-11-20T01:00:00Z,2026-11-19T07:54:38Z,TCU Horned Frogs,Texas A&M Aggies,True,DraftKings,spread,away,-1.5,105.0,0.511,0.0475,0.57,-3.55,170.3,1.5,163.5,,,,,
