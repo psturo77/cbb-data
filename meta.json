@@ -15,9 +15,9 @@
   "2024-25": 4763,
   "2025-26": 4761
  },
- "data_through": "2026-11-17",
+ "data_through": "2026-11-18",
  "stats_season": "2026-27",
- "stats_through": "2026-11-17",
+ "stats_through": "2026-11-18",
  "teams": 365,
  "prior_coef": [
   1.2589289389509777,
@@ -31,6 +31,6 @@
   0.49079834320737087
  ],
  "engine": "v3m",
- "market_correction_games": 710,
- "total_correction_games": 710
+ "market_correction_games": 771,
+ "total_correction_games": 771
 }
