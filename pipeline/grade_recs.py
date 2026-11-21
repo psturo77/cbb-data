@@ -22,6 +22,14 @@ S = pd.read_parquet(f"{SRC}/schedules/parquet/mbb_schedule_{season}.parquet")
 S = S[S.status_type_completed == True].copy(); S["game_id"] = S.game_id.astype(str); S = S.set_index("game_id")
 L = pd.read_csv(f"{REPO}/lines.csv", dtype={"game_id": str}).drop_duplicates("game_id", keep="last").set_index("game_id") if os.path.exists(f"{REPO}/lines.csv") else pd.DataFrame()
 for c in ("result", "units_won", "final", "close", "clv", "mv"): R[c] = None
+# line age at the rec (Nov 21 2026): hours since our pulls first saw a line for the game. Recs from before Nov 21 have no first_seen;
+# rec_first_seen.csv backfills the ones still in the odds doc then (opener first-seen times are only kept 14 days).
+if "first_seen" not in R: R["first_seen"] = None
+_bf = f"{REPO}/rec_first_seen.csv"
+if os.path.exists(_bf):
+    _m = pd.read_csv(_bf, dtype={"game_id": str}).set_index("game_id").first_seen
+    R["first_seen"] = R.first_seen.where(R.first_seen.notna(), R.game_id.map(_m))
+R["line_age_h"] = ((pd.to_datetime(R.rec_at, utc=True, format="ISO8601") - pd.to_datetime(R.first_seen, utc=True, format="ISO8601")).dt.total_seconds() / 3600).round(2)
 for c in ("mkt_sp", "mkt_tot"):
     if c not in R: R[c] = None
 # Two measures against the close (Nov 14 2026):
@@ -56,7 +64,7 @@ for i, r in R.iterrows():
             if pd.notna(r.mkt_tot): R.at[i, "mv"] = round((l.total_close - r.mkt_tot) if r.side == "over" else (r.mkt_tot - l.total_close), 2)
 cols = ["id", "game_id", "rec_at", "start", "home", "away", "neutral", "early", "hours_to_tip", "market", "side", "line", "price", "book", "ev", "p",
         "units", "off_pinnacle", "timing", "prime", "caution", "model_pm", "model_pt", "injury_adj", "mkt_sp", "mkt_tot", "anchor", "open_sp", "open_tot",
-        "result", "units_won", "final", "close", "clv", "mv"]
+        "first_seen", "line_age_h", "result", "units_won", "final", "close", "clv", "mv"]
 R = R.reindex(columns=cols).sort_values(["start", "id"])
 R.to_csv(f"{REPO}/recs.csv", index=False)
 G = R[R.result.isin(["win", "loss", "push"])]
@@ -85,6 +93,13 @@ card = dict(updated=pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ"), s
             record=dict(w=int((G.result == "win").sum()), l=int((G.result == "loss").sum()), p=int((G.result == "push").sum()),
                         units=round(float(pd.to_numeric(G.units_won).sum()), 2), staked=round(float(G.units.sum()), 2)),
             close_source="DraftKings close via ESPN (lines.csv)")
+# spreads by how long the line had been up when the rec was made (the backtest edge was at openers)
+_age = pd.to_numeric(sp.line_age_h, errors="coerce")
+card["spread_by_line_age"] = {lab: dict(clvstats(sp[(_age > lo) & (_age <= hi)]), w=int((sp[(_age > lo) & (_age <= hi)].result == "win").sum()),
+                                        l=int((sp[(_age > lo) & (_age <= hi)].result == "loss").sum()),
+                                        units=round(float(pd.to_numeric(sp[(_age > lo) & (_age <= hi)].units_won).sum()), 2))
+                              for lab, lo, hi in (("under 1.5h", -1, 1.5), ("1.5-6h", 1.5, 6), ("6h+", 6, 1e9))}
+card["spread_line_age_known"] = int(_age.notna().sum())
 # compact graded-rec feed for the artifact's Stats tab: one array per graded rec, newest 1500 (keeps the doc well under the size limit)
 # [date(ET), market, side, line, price, units, units_won, result, clv, ev, p, prime, early, hours_to_tip, caution, book, mv]
 def _n(x, d=3):
