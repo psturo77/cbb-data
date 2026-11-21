@@ -121,7 +121,8 @@ for gid, r in prev.items():
         c = dict(r); c.pop("opt", None); c.pop("q", None); out_games[gid] = c
 doc = dict(loaded=now.strftime("%Y-%m-%dT%H:%M:%SZ"), file="cloud pull", books=books,
            book=books[0] if len(books) == 1 else f"{len(books)} books",
-           allBooks=sorted([dict(k=k, t=t) for k, t in seen_books.items()], key=lambda x: x["t"]),
+           # keep books seen in earlier pulls too: since Nov 21 the pull asks only for your books + Pinnacle (1 credit instead of 3)
+           allBooks=sorted([dict(k=k, t=t) for k, t in {**{x["k"]: x["t"] for x in prev_doc.get("allBooks", [])}, **seen_books}.items()], key=lambda x: x["t"]),
            games=out_games, unmatched=sorted(unmatched), matched=matched, source="cloud")
 size = lambda: len(json.dumps(doc))
 far = sorted(fresh, key=lambda i: out_games[i]["start"], reverse=True)
