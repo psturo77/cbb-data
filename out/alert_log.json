@@ -1,0 +1,263 @@
+[
+ {
+  "run": "44199370616",
+  "built_at": "2026-11-17T23:27:29Z",
+  "alerts": []
+ },
+ {
+  "run": "44207503050",
+  "built_at": "2026-11-18T00:25:25Z",
+  "alerts": []
+ },
+ {
+  "run": "44219197437",
+  "built_at": "2026-11-18T01:55:05Z",
+  "alerts": []
+ },
+ {
+  "run": "44226404504",
+  "built_at": "2026-11-18T02:53:56Z",
+  "alerts": []
+ },
+ {
+  "run": "44233821611",
+  "built_at": "2026-11-18T03:57:04Z",
+  "alerts": []
+ },
+ {
+  "run": "44241155741",
+  "built_at": "2026-11-18T05:01:58Z",
+  "alerts": []
+ },
+ {
+  "run": "44329595812",
+  "built_at": "2026-11-18T14:56:38Z",
+  "alerts": []
+ },
+ {
+  "run": "44341985204",
+  "built_at": "2026-11-18T16:00:17Z",
+  "alerts": []
+ },
+ {
+  "run": "44354788348",
+  "built_at": "2026-11-18T17:07:05Z",
+  "alerts": []
+ },
+ {
+  "run": "44369104099",
+  "built_at": "2026-11-18T18:23:40Z",
+  "alerts": []
+ },
+ {
+  "run": "44381965399",
+  "built_at": "2026-11-18T19:36:52Z",
+  "alerts": [
+   "Charleston Southern +1.5 \u2212105 (BetMGM) - edge +5.0%, 52% to win, bet $13 (0.7u) - Wofford at Charleston Southern, Wed Nov 18 7:00 PM - 2.5 pts better than Pinnacle"
+  ]
+ },
+ {
+  "run": "44396015396",
+  "built_at": "2026-11-18T20:55:45Z",
+  "alerts": []
+ },
+ {
+  "run": "44406056610",
+  "built_at": "2026-11-18T21:54:09Z",
+  "alerts": []
+ },
+ {
+  "run": "44415808337",
+  "built_at": "2026-11-18T22:54:56Z",
+  "alerts": []
+ },
+ {
+  "run": "44424214151",
+  "built_at": "2026-11-18T23:51:42Z",
+  "alerts": []
+ },
+ {
+  "run": "44434746482",
+  "built_at": "2026-11-19T01:10:43Z",
+  "alerts": []
+ },
+ {
+  "run": "44444873603",
+  "built_at": "2026-11-19T02:31:55Z",
+  "alerts": [
+   "Charleston \u22121.5 +105 (DraftKings) - edge +7.2%, 52% to win, bet $17 (0.9u) - Charleston at Drake, Thu Nov 19 7:30 PM"
+  ]
+ },
+ {
+  "run": "44451658590",
+  "built_at": "2026-11-19T03:28:55Z",
+  "alerts": [
+   "UMBC +33 \u2212105 (Fanatics) - edge +16.6%, 58% to win, bet $30 (1.5u) - UMBC at Ohio State, Thu Nov 19 7:00 PM"
+  ]
+ },
+ {
+  "run": "44459440554",
+  "built_at": "2026-11-19T04:37:34Z",
+  "alerts": []
+ },
+ {
+  "run": "44549102570",
+  "built_at": "2026-11-19T14:56:34Z",
+  "alerts": [
+   "Houston Christian \u22122.5 \u2212110 (Caesars) - edge +5.7%, 55% to win, bet $16 (0.8u) - Georgia Southern at Houston Christian, Thu Nov 19 8:00 PM - 1 pts better than Pinnacle"
+  ]
+ },
+ {
+  "run": "44560953140",
+  "built_at": "2026-11-19T16:00:34Z",
+  "alerts": []
+ },
+ {
+  "run": "44573546805",
+  "built_at": "2026-11-19T17:08:01Z",
+  "alerts": []
+ },
+ {
+  "run": "44587986994",
+  "built_at": "2026-11-19T18:28:57Z",
+  "alerts": []
+ },
+ {
+  "run": "44600331830",
+  "built_at": "2026-11-19T19:39:28Z",
+  "alerts": []
+ },
+ {
+  "run": "44613357086",
+  "built_at": "2026-11-19T20:54:47Z",
+  "alerts": []
+ },
+ {
+  "run": "44623007605",
+  "built_at": "2026-11-19T21:53:13Z",
+  "alerts": [
+   "Georgia \u22128.5 \u2212102 (FanDuel) - edge +9.2%, 55% to win, bet $23 (1.2u) - Georgia at Georgia Tech, Fri Nov 20 8:00 PM"
+  ]
+ },
+ {
+  "run": "44632374971",
+  "built_at": "2026-11-19T22:51:50Z",
+  "alerts": [
+   "Virginia Tech \u221210.5 \u2212110 (DraftKings) - edge +7.1%, 56% to win, bet $19 (1.0u) - Northwestern at Virginia Tech, Fri Nov 20 3:00 PM",
+   "Oakland +24.5 \u2212102 (FanDuel) - edge +6.0%, 54% to win, bet $15 (0.8u) - Oakland at Purdue, Fri Nov 20 7:00 PM"
+  ]
+ },
+ {
+  "run": "44640193060",
+  "built_at": "2026-11-19T23:45:14Z",
+  "alerts": []
+ },
+ {
+  "run": "44650662434",
+  "built_at": "2026-11-20T01:03:39Z",
+  "alerts": []
+ },
+ {
+  "run": "44659367456",
+  "built_at": "2026-11-20T02:15:37Z",
+  "alerts": []
+ },
+ {
+  "run": "44667329940",
+  "built_at": "2026-11-20T03:24:26Z",
+  "alerts": []
+ },
+ {
+  "run": "44675298492",
+  "built_at": "2026-11-20T04:35:35Z",
+  "alerts": [
+   "App State +2.5 \u2212105 (DraftKings) - edge +5.8%, 54% to win, bet $15 (0.8u) - North Texas at App State, Fri Nov 20 6:30 PM"
+  ]
+ },
+ {
+  "run": "44682540499",
+  "built_at": "2026-11-20T05:40:57Z",
+  "alerts": []
+ },
+ {
+  "run": "44758142433",
+  "built_at": "2026-11-20T14:56:54Z",
+  "alerts": [
+   "Vanderbilt \u221216.5 \u2212110 (Caesars) - edge +6.0%, 56% to win, bet $17 (0.8u) - UCF at Vanderbilt, Fri Nov 20 8:00 PM - 1 pts better than Pinnacle"
+  ]
+ },
+ {
+  "run": "44768425862",
+  "built_at": "2026-11-20T15:57:53Z",
+  "alerts": []
+ },
+ {
+  "run": "44778726243",
+  "built_at": "2026-11-20T16:59:34Z",
+  "alerts": []
+ },
+ {
+  "run": "44788252531",
+  "built_at": "2026-11-20T17:59:13Z",
+  "alerts": []
+ },
+ {
+  "run": "44797822422",
+  "built_at": "2026-11-20T18:59:31Z",
+  "alerts": []
+ },
+ {
+  "run": "44807281138",
+  "built_at": "2026-11-20T20:00:38Z",
+  "alerts": []
+ },
+ {
+  "run": "44815161713",
+  "built_at": "2026-11-20T20:52:24Z",
+  "alerts": []
+ },
+ {
+  "run": "44823788501",
+  "built_at": "2026-11-20T21:50:39Z",
+  "alerts": []
+ },
+ {
+  "run": "44831832040",
+  "built_at": "2026-11-20T22:49:15Z",
+  "alerts": []
+ },
+ {
+  "run": "44839469594",
+  "built_at": "2026-11-20T23:49:41Z",
+  "alerts": []
+ },
+ {
+  "run": "44848179075",
+  "built_at": "2026-11-21T01:08:11Z",
+  "alerts": [
+   "Rider +4.5 +100 (DraftKings) - edge +5.9%, 53% to win, bet $15 (0.7u) - Navy at Rider, Sat Nov 21 2:00 PM"
+  ]
+ },
+ {
+  "run": "44856166274",
+  "built_at": "2026-11-21T02:30:46Z",
+  "alerts": [
+   "Rider +5 \u2212105 (Fanatics) - edge +5.2%, 52% to win, bet $14 (0.7u) - Navy at Rider, Sat Nov 21 2:00 PM"
+  ]
+ },
+ {
+  "run": "44860847028",
+  "built_at": "2026-11-21T03:23:59Z",
+  "alerts": []
+ },
+ {
+  "run": "44866443041",
+  "built_at": "2026-11-21T04:31:13Z",
+  "alerts": []
+ },
+ {
+  "run": "44871186801",
+  "built_at": "2026-11-21T05:31:09Z",
+  "alerts": []
+ }
+]
