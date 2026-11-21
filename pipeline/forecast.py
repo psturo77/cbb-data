@@ -188,14 +188,15 @@ def moves(E, c):
 linemove = dict(model=moves(E, "pm"), bpi=moves(EB, "bpi"), model_on_bpi_games=moves(EB, "pm"), min=MOVE_MIN)
 
 C = P[P.pm.notna() & (P.margin != 0)].copy()
-C["wp"] = Phi(C.pm / SIG); fav = np.maximum(C.wp, 1 - C.wp); won = np.where(C.wp >= 0.5, C.margin > 0, C.margin < 0)
+SIG_EARLY = 12.5   # same as dashboard.py: win chances use it while either team has played under 5 games
+C["sig"] = np.where(C.early, SIG_EARLY, SIG); C["wp"] = Phi(C.pm / C.sig); fav = np.maximum(C.wp, 1 - C.wp); won = np.where(C.wp >= 0.5, C.margin > 0, C.margin < 0)
 cal = []
 for lo, hi in ((.5, .6), (.6, .7), (.7, .8), (.8, .9), (.9, .97), (.97, 1.01)):
     sel = (fav >= lo) & (fav < hi)
     if sel.sum(): cal.append(dict(lo=lo, hi=min(hi, 1.0), n=int(sel.sum()), pred=r2(100 * fav[sel].mean()), won=r2(100 * won[sel].mean())))
 CB = C[C.spread_close.notna() & ~C.bad_line]
-brier = dict(n=int(len(CB)), model=round(float(((Phi(CB.pm / SIG) - (CB.margin > 0)) ** 2).mean()), 4),
-             close=round(float(((Phi(-CB.spread_close / SIG) - (CB.margin > 0)) ** 2).mean()), 4)) if len(CB) else None
+brier = dict(n=int(len(CB)), model=round(float(((Phi(CB.pm / CB.sig) - (CB.margin > 0)) ** 2).mean()), 4),
+             close=round(float(((Phi(-CB.spread_close / CB.sig) - (CB.margin > 0)) ** 2).mean()), 4)) if len(CB) else None
 
 T = P[P.pt.notna() & P.total_open.notna() & P.total_close.notna() & ((P.total_open - P.total_close).abs() < 15)]
 totals = dict(n=int(len(T)), model=r2((T.total - T.pt).abs().mean()), open=r2((T.total - T.total_open).abs().mean()),

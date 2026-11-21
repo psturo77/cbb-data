@@ -64,6 +64,14 @@ have = S.game_id.isin(E.index)
 upd_cols = ["start_date", "time_valid", "neutral_site", "status_type_name", "status_type_completed", "home_score", "away_score"]
 S = S.set_index("game_id")
 both = S.index[S.index.isin(E.index)]
+# hoopR and ESPN sometimes list a (neutral-site) game's teams the other way round, and either can change it later. Scores are copied
+# by position, so swap ESPN's scores into hoopR's orientation first - otherwise each team gets the other's score (Bradley 62-61
+# George Mason, Nov 14 2026, was saved as George Mason 62-61). Nov 21 2026.
+sw = both[(pd.to_numeric(S.loc[both, "home_id"], errors="coerce").values == E.loc[both, "away_id"].values)
+          & (pd.to_numeric(S.loc[both, "away_id"], errors="coerce").values == E.loc[both, "home_id"].values)]
+if len(sw):
+    E.loc[sw, ["home_score", "away_score"]] = E.loc[sw, ["away_score", "home_score"]].values
+    log(f"espn_schedule: {len(sw)} game(s) listed home/away the other way round by ESPN - scores matched to hoopR's teams")
 changed = 0
 for c in upd_cols:
     if c not in S.columns: S[c] = np.nan

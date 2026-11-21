@@ -14,6 +14,9 @@ TZ = "America/New_York"
 today = pd.Timestamp(sys.argv[4]) if len(sys.argv) > 4 else pd.Timestamp.now(tz=TZ).tz_localize(None).normalize()
 BACK, AHEAD = 7, 28
 EPOCH = pd.Timestamp("1899-12-30")
+# Early season (either team under 5 games) the model misses by more than its full-season sigma: RMS miss 12.5 on 801 games
+# Nov 2-20 2026 (11.2 assumed), and 2025-26's first-4-games MAE 10.1 implies about 12.6. Win chances use this then (Nov 21 2026).
+SIG_EARLY = 12.5
 os.makedirs(OUT, exist_ok=True)
 
 teams = pd.read_csv(f"{IN}/teams.csv").set_index("Team")
@@ -93,10 +96,11 @@ for g in window.itertuples():
         mparts = []
         pm = evaluate("margin", h, a, neutral, serial, lh, la, mparts)
         pt = evaluate("total", h, a, neutral, serial, lh, la)
-        wp = 0.5 * (1 + erf(pm / stat["sigma_margin"] / sqrt(2)))
+        gph, gpa = gp_at(h), gp_at(a)
+        wp = 0.5 * (1 + erf(pm / (SIG_EARLY if min(gph, gpa) < 5 else stat["sigma_margin"]) / sqrt(2)))
         rec.update(pm=round(pm, 2), pt=round(pt, 1), wp=round(wp, 4),
                    rest_h=int((g.day - ph).days), rest_a=int((g.day - pa).days),
-                   gp_h=gp_at(h), gp_a=gp_at(a), mt=mparts)   # mt: each margin term's points, in board_meta.terms order
+                   gp_h=gph, gp_a=gpa, mt=mparts)   # mt: each margin term's points, in board_meta.terms order
         if "Miss" in teams.columns:
             rec["miss_h"], rec["miss_a"] = round(float(teams.at[h, "Miss"]), 1), round(float(teams.at[a, "Miss"]), 1)
         rec["early"] = rec["gp_h"] < 5 or rec["gp_a"] < 5
@@ -123,7 +127,7 @@ term_rows = [dict(target=m.target, type=m.type, label=m.label, coef=round(float(
 board_meta = dict(
     updated=pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ"), today=today.strftime("%Y-%m-%d"),
     data_through=meta.get("data_through"), stats_season=meta.get("stats_season"), stats_through=meta.get("stats_through"),
-    n_games=int(stat.get("n_games", 0)), sigma_margin=round(stat["sigma_margin"], 3), sigma_total=round(stat["sigma_total"], 3),
+    n_games=int(stat.get("n_games", 0)), sigma_margin=round(stat["sigma_margin"], 3), sigma_early=SIG_EARLY, sigma_total=round(stat["sigma_total"], 3),
     terms=term_rows,
     fit=dict(spread_adjr2=round(stat.get("spread_adjr2_efficiency", 0), 4), spread_adjr2_box=round(stat.get("spread_adjr2_box", 0), 4),
              total_adjr2=round(stat.get("total_adjr2_efficiency", 0), 4), total_adjr2_box=round(stat.get("total_adjr2_box", 0), 4)),
