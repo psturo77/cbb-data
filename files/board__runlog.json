@@ -1,0 +1,18 @@
+{
+ "at": "2026-11-21T07:51:01Z",
+ "checks": "passed",
+ "board": "written",
+ "lines": [
+  "espn_schedule: ESPN lists 2187 games 14 days back to 28 ahead (1432 upcoming); hoopR had 2187; added 0, 2249 start-time/status/score updates; mbb_schedule_2027.parquet now 6076 games",
+  "espn_schedule: ratings coverage, last 3 days: 102 of 159 Division I finals have hoopR box scores - MISSING 57: Loyola Maryland Greyhounds at Virginia Cavaliers; Eastern Illinois Panthers at Illinois Fighting Illini; Coastal Carolina Chanticleers at Tennessee Volunteers; UCF Knights at Vanderbilt Commodores; Manhattan Jaspers at Miami Hurricanes; Mississippi Valley State Delta Devils at Arkansas Razorbacks",
+  "Games through 2026-11-19; 23486 training games, 7 this season",
+  "Ratings: 2026-27 through 2026-11-19; HCA 1.73-5.06",
+  "Spread model: rating coef 0.932, missing-players coef -0.110, sigma_margin 11.19",
+  "Closing lines saved: 1 new; upcoming games with ESPN lines: 50; teams with Miss > 0: 90",
+  "players: 644 teams, 4091 players (375 teams from this season); coef -0.110; 191 KB",
+  "props_proj: 1037 player projections for 95 games (2026-11-21 - 2026-11-22); 69 KB",
+  "Today's slate: 57 games",
+  "board recs: 255 recorded, 250 graded: 126-122, ROI -2.6%, market moved our way 32% (spread 79-65, ROI +0.5%, market moved our way 34%; total 43-54, ROI -14.0%, market moved our way 28%; ml 4-3, ROI +30.9%; PRIME 14-17, ROI -13.7%, market moved our way 34%)",
+  "props: 323 recorded, 269 graded | lean 0-1.5: 133 props, right 50%, flat ROI -7.0%; lean 1.5-3: 92 props, right 57%, flat ROI +5.6%; lean 3-99: 44 props, right 59%, flat ROI +6.7%"
+ ]
+}
