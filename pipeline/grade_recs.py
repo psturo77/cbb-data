@@ -32,17 +32,23 @@ for c in ("mkt_sp", "mkt_tot"):
 for i, r in R.iterrows():
     if r.game_id not in S.index: continue
     s = S.loc[r.game_id]; m = float(s.home_score) - float(s.away_score); t = float(s.home_score) + float(s.away_score)
-    # the rec's home/away are the model's (schedule) orientation
+    # The rec's home/away are usually the schedule's, but on some neutral-site games the board listed the teams the other way
+    # round (Nov 21 2026: 9 recs, e.g. Bradley/George Mason). Orient the result and the close to the rec's own home team.
+    swap = str(r.get("home")) == str(s.away_display_name) and str(r.get("away")) == str(s.home_display_name)
+    if swap: m = -m
     if r.market == "spread": c = (m if r.side == "home" else -m) + r.line
     elif r.market == "total": c = (t - r.line) if r.side == "over" else (r.line - t)
     else: c = m if r.side == "home" else -m
     res = "win" if c > 0 else "loss" if c < 0 else "push"
-    R.at[i, "result"] = res; R.at[i, "final"] = f"{s.away_display_name} {int(s.away_score)} @ {s.home_display_name} {int(s.home_score)}"
+    R.at[i, "result"] = res
+    R.at[i, "final"] = (f"{s.home_display_name} {int(s.home_score)} vs {s.away_display_name} {int(s.away_score)}" if swap
+                        else f"{s.away_display_name} {int(s.away_score)} @ {s.home_display_name} {int(s.home_score)}")
     R.at[i, "units_won"] = round(r.units * payout(r.price) if res == "win" else -r.units if res == "loss" else 0.0, 3)
     if len(L) and r.game_id in L.index:
         l = L.loc[r.game_id]; flip = pd.notna(l.get("home_id")) and str(int(float(l.home_id))) != str(int(s.home_id))
         if r.market == "spread" and pd.notna(l.spread_close):
             sp = -l.spread_close if flip else l.spread_close
+            if swap: sp = -sp
             R.at[i, "close"] = sp; R.at[i, "clv"] = round(r.line - sp if r.side == "home" else r.line + sp, 2)
             if pd.notna(r.mkt_sp): R.at[i, "mv"] = round((r.mkt_sp - sp) if r.side == "home" else (sp - r.mkt_sp), 2)
         elif r.market == "total" and pd.notna(l.total_close):
