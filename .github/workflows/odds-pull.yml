@@ -1,6 +1,6 @@
 name: CBB odds pull
-# Since Nov 21 2026: one run loops pipeline/odds_cycle.sh every 5 min from 3:30-7:30 PM ET (when books post openers) and every
-# 10 min otherwise, 7 AM-midnight ET, for about 50 min; the cron below starts a new run every 15 min, so one is always queued
+# Since Nov 21 2026: one run loops pipeline/odds_cycle.sh every 2 min from 3:30-7:30 PM ET (when books post openers) and every
+# 3 min otherwise (10 min if credits run short before the monthly reset), 7 AM-midnight ET, for about 50 min; the cron below starts a new run every 15 min, so one is always queued
 # (GitHub drops or delays many scheduled starts). Each cycle asks for your books + Pinnacle only: 1 credit (was 3). Each cycle runs
 # pipeline/odds_run.py here in GitHub to build the
 # board's odds, ESPN lines, injuries, alerts, ledger recs (and the 1 PM props snapshot). Everything lands on the odds-raw
@@ -63,8 +63,12 @@ jobs:
             BUILD="${{ github.run_id }}$(printf %02d $i)" bash pipeline/odds_cycle.sh || echo "cycle $i failed"
             echo "::endgroup::"
             [ "$MODE" != "scheduled" ] && break
-            # every 5 min 3:30-7:30 PM ET (openers), every 10 min otherwise
-            if [ $hm -ge 930 ] && [ $hm -lt 1170 ]; then gap=300; else gap=600; fi
+            # every 2 min 3:30-7:30 PM ET (openers), every 3 min otherwise (~400 credits a day of the 20,000-a-month plan).
+            # Credit guard: if fewer than 300 credits per day are left before the 1st of next month, slow to every 10 min.
+            if [ $hm -ge 930 ] && [ $hm -lt 1170 ]; then gap=120; else gap=180; fi
+            left=$(python3 -c "import json;print(int(json.load(open('/tmp/raw/pull.json')).get('credits') or 0))" 2>/dev/null || echo 0)
+            days=$(python3 -c "import datetime as d;t=d.date.today();n=(t.replace(day=28)+d.timedelta(days=4)).replace(day=1);print((n-t).days)")
+            if [ "$left" -lt $(( 300 * days )) ]; then echo "credit guard: $left left, $days days to reset - every 10 min"; gap=600; fi
             now=$(date +%s); [ $(( now - start + gap )) -gt 3000 ] && { echo "run time used - next run takes over"; break; }
             wait=$(( gap - (now - c0) )); [ $wait -lt 30 ] && wait=30
             sleep $wait
