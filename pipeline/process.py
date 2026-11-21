@@ -428,6 +428,9 @@ for y in seasons:
     finals[y]["Miss"] = pd.Series(miss_now).reindex(finals[y].index).fillna(0.0)
     log(y, "walk-forward done; rows so far", len(rows))
 
+# current season's pre-game inputs (ratings as of each game day, before the game) for the forecast scorecard (forecast.py)
+if cur_rows: pd.DataFrame(cur_rows).to_csv(f"{OUT}/pregame_inputs.csv", index=False)
+
 # ================================================================== team table for the season being predicted
 upcoming = latest + 1
 if latest_done and roster(upcoming) is not None:

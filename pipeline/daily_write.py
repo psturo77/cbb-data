@@ -60,7 +60,7 @@ else:
         lines.append(([l for l in out if l.startswith("props:")] or ["props grading: no summary"])[-1] if rc == 0
                      else "grade_props.py failed: " + (out[-1] if out else f"exit {rc}"))
     else: lines.append("props: none recorded yet")
-    for name in ("meta", "teams", "espn", "players", "props"):
+    for name in ("meta", "teams", "espn", "players", "props", "forecast"):
         f = f"{BD}/board_{name}.json"
         if os.path.exists(f): writes.append(entry("board", name, f, VB))
     if sc: writes.append(entry("board", "scorecard", sc, VB))
