@@ -1,0 +1,26 @@
+name: Lab fetch
+# Manual only: download a few public data files (one-off research, e.g. Torvik ratings archive) and keep them as a run artifact.
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: "space-separated URLs"
+        required: true
+permissions:
+  contents: read
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Download
+        env:
+          URLS: ${{ inputs.urls }}
+        run: |
+          mkdir -p out; i=0
+          for u in $URLS; do i=$((i+1)); f="out/$(echo "$u" | sed 's#https\?://##; s#[/?&=]#_#g')"
+            code=$(curl -sL -A "Mozilla/5.0 (CBB-model research)" -o "$f" -w "%{http_code}" --max-time 60 "$u"); echo "$code $(stat -c%s "$f") $u"; sleep 1; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lab-fetch
+          path: out
