@@ -156,6 +156,11 @@ if RAWDIR and not LIGHT and os.path.isdir(os.path.join(RAWDIR, "prop")):
     for f in new_p: shutil.copy(f, f"{OUT}/prop/")
     if new_p: props_line = f"props: {len(new_p)} new lines recorded from the 1 PM snapshot"
 
+# ---- step 10b: live scores (board/scores) - finals reach the board within minutes; the page grades picks from them
+rc, _, log = run(["live_scores.py", f"{DB}/slate", f"{OUT}/board_scores.json"])
+if rc != 0 and os.path.exists(f"{OUT}/board_scores.json"): os.remove(f"{OUT}/board_scores.json")
+status["scores"] = next((l for l in log if l.startswith("live_scores:")), "live_scores: failed")
+
 # ---- step 11: batches, ready for ArtifactData "batch"
 def pin(name, entry):
     if name in VER: entry["if_version"] = VER[name]
@@ -164,6 +169,7 @@ first = []
 if status["odds_ok"]: first.append(pin("odds", dict(op="set", collection="board", doc_id="odds", file_path=f"{OUT}/board_odds.json")))
 if os.path.exists(f"{OUT}/board_espn.json"): first.append(pin("espn", dict(op="set", collection="board", doc_id="espn", file_path=f"{OUT}/board_espn.json")))
 if not LIGHT and inj_file == f"{OUT}/board_injuries.json": first.append(pin("injuries", dict(op="set", collection="board", doc_id="injuries", file_path=inj_file)))
+if os.path.exists(f"{OUT}/board_scores.json"): first.append(pin("scores", dict(op="set", collection="board", doc_id="scores", file_path=f"{OUT}/board_scores.json")))
 if os.path.exists(alerted): first.append(pin("alerts", dict(op="set", collection="board", doc_id="alerts", file_path=alerted)))
 extra = [dict(op="set", collection="rec", doc_id=os.path.basename(f)[:-5], file_path=f) for f in sorted(glob.glob(f"{OUT}/rec/*.json"))]
 extra += [dict(op="set", collection="prop", doc_id=os.path.basename(f)[:-5], file_path=f) for f in sorted(glob.glob(f"{OUT}/prop/*.json"))]
