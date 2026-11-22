@@ -107,3 +107,4 @@ game_id,date,start,recorded,home,away,early,book,market,side,line,price,p,ev,uni
 401925942,2026-11-22,2026-11-22T19:00:00Z,2026-11-22T02:40:32Z,Utah Tech Trailblazers,South Dakota Coyotes,True,DraftKings,spread,home,-1.5,110.0,0.5064,0.0634,0.72,2.69,160.8,-1.5,154.5,,,,,
 401923323,2026-11-22,2026-11-22T20:30:00Z,2026-11-22T02:40:32Z,UAlbany Great Danes,Mercyhurst Lakers,False,DraftKings,spread,away,1.5,-120.0,0.5737,0.0518,0.78,-2.66,130.4,-1.5,129.5,,,,,
 401909556,2026-11-22,2026-11-22T22:00:00Z,2026-11-22T03:38:21Z,Boston College Eagles,NJIT Highlanders,False,Draft Kings,spread,away,24.5,-110.0,0.5549,0.0593,0.82,23.19,136.3,-24.5,135.5,,,,,
+401912212,2026-11-22,2026-11-22T18:00:00Z,2026-11-22T05:32:05Z,American University Eagles,Towson Tigers,True,Draft Kings,spread,home,-1.5,110.0,0.5073,0.0654,0.74,2.87,131.5,-1.5,132.5,,,,,
