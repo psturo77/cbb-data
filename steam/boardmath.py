@@ -2,7 +2,9 @@
 from math import erf, sqrt
 import pandas as pd
 # ---- the board's constants (keep in step with cbb-board.html)
-W = dict(open=0.5, close=0.15, openEarly=0.15, closeEarly=0.0, tot=0.25, totEarly=0.2)
+W = dict(open=0.5, close=0.15, openEarly=0.15, closeEarly=0.0, tot=0.25, totEarly=0.2, openMiss=1.0)
+# openMiss (Nov 21 2026): the missing-players term (slate field pmiss) counts in full against early lines - the market prices only
+# ~40% of it by the close but results show all of it (2023-26 openers, edge 1.5+: 814-584 vs 393-292). Same as the board's W.
 CAP, CAP_TOT, MIN_EV = 6.0, 10.0, 0.02
 TOT_STAKE = 0.5    # totals staked at half (same as the board): small, over-heavy test sample; back to 1 if live CLV holds up
 MARKETS = {"spread"}   # bet types the board recommends and alerts (totals and moneylines switched off Nov 10 2026; add "total"/"ml" to restore)
@@ -43,11 +45,12 @@ def fair(g, o, sdm=11.2):
     tw = max(0.0, min(1.0, ((start - seen).total_seconds() / 3600 - 1) / 11))
     wo, wc = (W["openEarly"], W["closeEarly"]) if g.get("early") else (W["open"], W["close"])
     wsp, wt = wc + (wo - wc) * tw, (W["totEarly"] if g.get("early") else W["tot"]) * tw
+    mi = g.get("pmiss") or 0.0; wm = wsp if g.get("early") else W["close"] + (W["openMiss"] - W["close"]) * tw
     fm = ph = ft = None
     if o.get("sp") is not None:
-        mkt = -o["sp"]; d = max(-CAP, min(CAP, g["pm"] - mkt)); fm = mkt + wsp * d
+        mkt = -o["sp"]; d = max(-CAP, min(CAP, g["pm"] - mi - mkt)); fm = mkt + wsp * d + wm * mi
         nv = o.get("nvh") if o.get("nvh") is not None else novig(o.get("mlh"), o.get("mla"))
-        if nv is not None: ph = min(0.995, max(0.005, nv + wsp * (Phi((mkt + d) / sdm) - Phi(mkt / sdm))))
+        if nv is not None: ph = min(0.995, max(0.005, nv + wsp * (Phi((mkt + d) / sdm) - Phi(mkt / sdm)) + wm * (Phi((mkt + mi) / sdm) - Phi(mkt / sdm))))
     if o.get("tot") is not None and g.get("pt") is not None:
         ft = o["tot"] + wt * max(-CAP_TOT, min(CAP_TOT, g["pt"] - o["tot"]))
     return fm, ft, ph
