@@ -101,6 +101,8 @@ for g in window.itertuples():
         rec.update(pm=round(pm, 2), pt=round(pt, 1), wp=round(wp, 4),
                    rest_h=int((g.day - ph).days), rest_a=int((g.day - pa).days),
                    gp_h=gph, gp_a=gpa, mt=mparts)   # mt: each margin term's points, in board_meta.terms order
+        mi = [i for i, c in enumerate(terms[terms.target == "margin"].col1.tolist()) if c == "Miss"]
+        rec["pmiss"] = round(mparts[mi[0]], 2) if mi and len(mparts) > mi[0] else 0.0   # missing-players points (boardmath openMiss)
         if "Miss" in teams.columns:
             rec["miss_h"], rec["miss_a"] = round(float(teams.at[h, "Miss"]), 1), round(float(teams.at[a, "Miss"]), 1)
         rec["early"] = rec["gp_h"] < 5 or rec["gp_a"] < 5
