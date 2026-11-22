@@ -7,7 +7,11 @@ and, for an upcoming season with no games yet:    rosters/parquet/rosters_YYYY.p
 
 Model (tuned on 2021-22..2024-25, tested out of sample on 2025-26 against ESPN lines, Oct 2026):
   * Team rating = ridge fit of point margin (home court per team, shrunk to league average), no recency weighting
-    and no blowout cap (both made predictions worse). Prior each season from last season's rating, returning
+    and no blowout cap (both made predictions worse).
+    Prior strength lam 4 -> 8 (Nov 21 2026): with the better preseason prior (production + BPI), early results were moving
+    ratings too fast. Walk-forward, recipe refit on earlier seasons only: early-season avg miss (either team under 5 games)
+    2023-24 9.22->9.19, 2024-25 9.61->9.56, 2025-26 9.96->9.86, 2026-27 9.86->9.75; later games 0.00-0.01 better every season;
+    line moved toward the model more often in every season. lam 12 was not better before 2026-27. Prior each season from last season's rating, returning
     minutes and incoming-transfer quality (roster-based preseason ratings).
   * Spread = a*(rating diff) + b*(team home court, 0 if neutral) + c*(rest-day diff, capped at 2) + d
   * Totals from per-100 offense/defense/tempo ratings with an 80-day recency half-life:
@@ -43,7 +47,7 @@ FIRST = 2021                     # warm-up season (prior source); training rows 
 MIN_TEAM_GAMES = 15
 MIN_PRIOR = 5                    # both teams need this many prior games for a training row
 REST_CAP = 2
-CFG = dict(lam=4.0, lam_h=30.0, carry=0.85, carry_h=0.5, lam_eff=2.0, half_life_tot=80.0)
+CFG = dict(lam=8.0, lam_h=30.0, carry=0.85, carry_h=0.5, lam_eff=2.0, half_life_tot=80.0)
 BPI_W = 0.5   # preseason prior = 50% ours + 50% ESPN preseason BPI (bpi_preseason_YYYY.csv in the output dir, from bpi.py)
 MKT = dict(lam=1.0, lam_home=20.0, half_life=30.0)      # market correction (see docstring)
 MKT_TOT = dict(lam=3.0, lam_shift=15.0, half_life=30.0)  # totals version: corrections add (home + away)
