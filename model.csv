@@ -1,17 +1,17 @@
 target,type,col1,col2,col3,cap,coef,se,label
-margin,diff,Net,,,,1.002925615146854,0.009286043949991177,"Team rating difference (points, home - away)"
-margin,home,HCA,,,,0.6887984428092038,0.047421764388308654,Home team's home-court edge (0 if neutral)
-margin,rest_diff,LastGameSerial,,,2,1.6029509412603449,0.4905206111964368,Rest days difference (capped at 2)
-margin,const,,,,,0.48793764797369815,0.17650841407449447,Intercept
-margin,diff,Miss,,,,-0.11244369310527556,0.011403622001568301,Missing regulars (value of players who sat the last game)
+margin,diff,Net,,,,1.0029256151468542,0.009286043949991175,"Team rating difference (points, home - away)"
+margin,home,HCA,,,,0.6887984428092045,0.04742176438830853,Home team's home-court edge (0 if neutral)
+margin,rest_diff,LastGameSerial,,,2,1.6029509412603462,0.49052061119643675,Rest days difference (capped at 2)
+margin,const,,,,,0.48793764797369754,0.17650841407449408,Intercept
+margin,diff,Miss,,,,-0.1124436931052758,0.011403622001568301,Missing regulars (value of players who sat the last game)
 margin,diff,MktAdj,,,,1.0,,"Market correction (team difference, from closing lines)"
 margin,home,MktHome,,,,1.0,,Market correction to home court
 margin,none,,,,,0.0,,
 margin,none,,,,,0.0,,
 margin,none,,,,,0.0,,
-total,paceadj,AdjT,AdjO,AdjD,,1.0772083558857835,0.023243709088558814,Pace-adjusted expected points
-total,avg,AdjT,,,,1.434153648790809,0.0805487600105258,Average tempo
-total,const,,,,,-110.59554027895655,4.154519795483882,Intercept
+total,paceadj,AdjT,AdjO,AdjD,,1.077208355885784,0.023243709088556982,Pace-adjusted expected points
+total,avg,AdjT,,,,1.4341536487908089,0.0805487600105118,Average tempo
+total,const,,,,,-110.59554027895669,4.154519795483416,Intercept
 total,sum,TotAdj,,,,1.0,,"Market correction (both teams, from closing totals)"
 total,avg,TotShift,,,,1.0,,Market correction to the league-wide total
 total,none,,,,,0.0,,
@@ -27,8 +27,8 @@ stat,,,,,,1.0,,spread_model_is_efficiency
 stat,,,,,,1.0,,total_model_is_efficiency
 stat,,,,,,0.3550829508828165,,spread_adjr2_efficiency
 stat,,,,,,0.2986472044800209,,spread_adjr2_box
-stat,,,,,,0.21617691020038587,,total_adjr2_efficiency
-stat,,,,,,0.19752483915842967,,total_adjr2_box
+stat,,,,,,0.2161769102003861,,total_adjr2_efficiency
+stat,,,,,,0.19752483915842978,,total_adjr2_box
 stat,,,,,,11.189438901330414,,spread_rmse_efficiency
 stat,,,,,,11.668758356874726,,spread_rmse_box
 stat,,,,,,16.735399336013902,,total_rmse_efficiency
