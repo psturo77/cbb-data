@@ -1,17 +1,17 @@
 target,type,col1,col2,col3,cap,coef,se,label
-margin,diff,Net,,,,1.002925615146854,0.009286043949991175,"Team rating difference (points, home - away)"
-margin,home,HCA,,,,0.6887984428092038,0.04742176438830848,Home team's home-court edge (0 if neutral)
-margin,rest_diff,LastGameSerial,,,2,1.6029509412603449,0.4905206111964367,Rest days difference (capped at 2)
-margin,const,,,,,0.48793764797369815,0.1765084140744939,Intercept
+margin,diff,Net,,,,1.002925615146854,0.009286043949991177,"Team rating difference (points, home - away)"
+margin,home,HCA,,,,0.6887984428092038,0.047421764388308654,Home team's home-court edge (0 if neutral)
+margin,rest_diff,LastGameSerial,,,2,1.6029509412603449,0.4905206111964368,Rest days difference (capped at 2)
+margin,const,,,,,0.48793764797369815,0.17650841407449447,Intercept
 margin,diff,Miss,,,,-0.11244369310527556,0.011403622001568301,Missing regulars (value of players who sat the last game)
 margin,diff,MktAdj,,,,1.0,,"Market correction (team difference, from closing lines)"
 margin,home,MktHome,,,,1.0,,Market correction to home court
 margin,none,,,,,0.0,,
 margin,none,,,,,0.0,,
 margin,none,,,,,0.0,,
-total,paceadj,AdjT,AdjO,AdjD,,1.0772083558857835,0.02324370908857037,Pace-adjusted expected points
-total,avg,AdjT,,,,1.434153648790809,0.08054876001052001,Average tempo
-total,const,,,,,-110.59554027895655,4.1545197954820186,Intercept
+total,paceadj,AdjT,AdjO,AdjD,,1.0772083558857835,0.023243709088558814,Pace-adjusted expected points
+total,avg,AdjT,,,,1.434153648790809,0.0805487600105258,Average tempo
+total,const,,,,,-110.59554027895655,4.154519795483882,Intercept
 total,sum,TotAdj,,,,1.0,,"Market correction (both teams, from closing totals)"
 total,avg,TotShift,,,,1.0,,Market correction to the league-wide total
 total,none,,,,,0.0,,
