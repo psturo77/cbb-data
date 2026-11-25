@@ -1,0 +1,35 @@
+name: CBB availability reports (watch only)
+# Conference availability reports from the HD Intelligence widget (A-10, ACC, Big Ten, Big 12, Big East, MVC, SEC).
+# Watch only: saved to branch avail-data (latest report, first-seen log, raw responses); no bet math reads it.
+# Every 20 min, 10 AM-1 AM ET (initial reports the night before, game-day finals ~2 h before tip), Nov-Mar.
+on:
+  schedule:
+    - cron: "10,30,50 0-6,15-23 * 11,12,1,2,3 *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["avail/**", ".github/workflows/avail.yml"]
+concurrency:
+  group: avail
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Previous state
+        run: |
+          mkdir -p "$RUNNER_TEMP/st"
+          if git ls-remote --exit-code origin avail-data >/dev/null 2>&1; then
+            git fetch -q --depth 1 origin avail-data && git --work-tree="$RUNNER_TEMP/st" checkout FETCH_HEAD -- . && git reset -q
+          fi
+      - run: python3 avail/avail_pull.py "$RUNNER_TEMP/st"
+      - name: Save to branch avail-data
+        run: |
+          mkdir -p "$RUNNER_TEMP/pub" && cp -r "$RUNNER_TEMP/st/." "$RUNNER_TEMP/pub/" && cd "$RUNNER_TEMP/pub"
+          git init -q -b avail-data && git add -A
+          git -c user.name=avail -c user.email=avail@users.noreply.github.com commit -qm "availability $(date -u +%FT%TZ)"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" avail-data
