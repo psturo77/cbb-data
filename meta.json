@@ -7,18 +7,18 @@
   "2025-26",
   "2026-27"
  ],
- "games": 23533,
+ "games": 23582,
  "games_by_season": {
   "2021-22": 4493,
   "2022-23": 4722,
   "2023-24": 4740,
   "2024-25": 4763,
   "2025-26": 4761,
-  "2026-27": 54
+  "2026-27": 103
  },
- "data_through": "2026-11-23",
+ "data_through": "2026-11-25",
  "stats_season": "2026-27",
- "stats_through": "2026-11-23",
+ "stats_through": "2026-11-25",
  "teams": 365,
  "prior_coef": [
   0.398903956023758,
@@ -32,6 +32,6 @@
   0.4745263130691693
  ],
  "engine": "v3m",
- "market_correction_games": 972,
- "total_correction_games": 972
+ "market_correction_games": 1051,
+ "total_correction_games": 1051
 }
