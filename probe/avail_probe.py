@@ -1,5 +1,4 @@
-"""One-off probe v3: the HD Intelligence availability widget (app.hdintelligence.com) - robots.txt, terms, JS bundle,
-and the API endpoints the bundle calls. Polite: 5 s between requests. Output: probe_out/."""
+"""One-off probe v4: the HDI widget's public report/archive screens - fetch their code chunks and list the API calls."""
 import json, os, re, time, urllib.request
 UA = "Mozilla/5.0 (personal CBB model; availability probe)"
 OUT = "probe_out"; os.makedirs(OUT, exist_ok=True)
@@ -7,20 +6,11 @@ def get(url):
     time.sleep(5)
     try:
         r = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=30)
-        return r.status, r.geturl(), r.read().decode("utf-8", "replace")
+        return r.read().decode("utf-8", "replace")
     except Exception as e:
-        return None, url, "ERR " + repr(e)[:300]
-B = "https://app.hdintelligence.com"
+        return "ERR " + repr(e)[:300]
 rep = {}
-for p in ("/robots.txt", "/?source=B10&sport=Men%27s%20Basketball&conf=B10&type=report"):
-    s, u, h = get(B + p); rep[p] = {"status": s, "len": len(h)}
-    open(f"{OUT}/{re.sub(r'[^a-z0-9]+', '_', p.lower())[:60] or 'root'}.txt", "w").write(h)
-    if p.startswith("/?"):
-        for js in re.findall(r'src="\./(assets/[^"]+\.js)"', h):
-            s2, u2, j = get(f"{B}/{js}"); open(f"{OUT}/bundle.js", "w").write(j)
-            rep["bundle"] = {"url": u2, "status": s2, "len": len(j),
-                "urls": sorted(set(re.findall(r'https?://[a-zA-Z0-9._-]+(?:/[^"\'`\s)]*)?', j)))[:80],
-                "paths": sorted(set(re.findall(r'["\'`](/(?:api|v\d|reports?|availability|public)[^"\'`]*)["\'`]', j)))[:80],
-                "terms": sorted(set(re.findall(r'.{0,60}(?:terms|scrap|robot|automated).{0,60}', j, re.I)))[:20]}
-json.dump(rep, open(f"{OUT}/report.json", "w"), indent=1)
-print(json.dumps({k: (v if k != "bundle" else {x: v[x] for x in ("url", "status", "len")}) for k, v in rep.items()}))
+for c in ["PublishScreen-DuPqR3BC.js", "ArchiveScreen-D3naplgR.js", "sortReportsByKickoff-Dw-8FNwp.js", "SummaryScreen-BUZxPPBF.js"]:
+    j = get("https://app.hdintelligence.com/assets/" + c); open(f"{OUT}/{c}", "w").write(j)
+    rep[c] = {"len": len(j), "calls": sorted(set(re.findall(r'\.(?:get|post)\(\s*[`"\']([^`"\']+)', j)))}
+json.dump(rep, open(f"{OUT}/report.json", "w"), indent=1); print(json.dumps(rep))
