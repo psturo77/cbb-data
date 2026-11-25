@@ -62,9 +62,33 @@ for i, r in R.iterrows():
         elif r.market == "total" and pd.notna(l.total_close):
             R.at[i, "close"] = l.total_close; R.at[i, "clv"] = round((l.total_close - r.line) if r.side == "over" else (r.line - l.total_close), 2)
             if pd.notna(r.mkt_tot): R.at[i, "mv"] = round((l.total_close - r.mkt_tot) if r.side == "over" else (r.mkt_tot - l.total_close), 2)
+# ---- where a spread rec's edge came from (Nov 24 2026): the model vs one book's head start over the market.
+#   model_pts = the board's fair line minus the market line, toward the rec's side (board weights from boardmath: open/close by time
+#               to tip, early-season weights, missing players in full against early lines when the rec carries model_miss)
+#   book_pts  = how many points better the rec's line was than the market line when made, credited up to OFF_FULL (1 pt) as the board does
+#   driver    = "model" if model_pts > book_pts else "book".  tier = conferences of the two teams (ACC, Big East, Big Ten, Big 12, SEC).
+from boardmath import W, CAP, OFF_FULL
+HIGH = {2, 4, 7, 8, 23}
+for c in ("model_pts", "book_pts", "driver", "tier"): R[c] = None
+for i, r in R.iterrows():
+    if r.market != "spread" or pd.isna(r.get("mkt_sp")) or pd.isna(r.get("model_pm")) or pd.isna(r.get("line")): continue
+    hrs = float(r.hours_to_tip) if pd.notna(r.get("hours_to_tip")) else 12.0
+    tw = max(0.0, min(1.0, (hrs - 1) / 11)); early = bool(r.early) if pd.notna(r.get("early")) else False
+    wo, wc = (W["openEarly"], W["closeEarly"]) if early else (W["open"], W["close"]); wsp = wc + (wo - wc) * tw
+    mi = float(r.model_miss) if "model_miss" in R and pd.notna(r.get("model_miss")) else 0.0
+    wm = wsp if early else W["close"] + (W["openMiss"] - W["close"]) * tw
+    mkt = -float(r.mkt_sp); fm = mkt + wsp * max(-CAP, min(CAP, float(r.model_pm) - mi - mkt)) + wm * mi
+    sgn = 1 if r.side == "home" else -1
+    mp = sgn * (fm - mkt); head = (float(r.line) - float(r.mkt_sp)) if r.side == "home" else (float(r.line) + float(r.mkt_sp))
+    bp = min(head, OFF_FULL)
+    R.at[i, "model_pts"] = round(mp, 2); R.at[i, "book_pts"] = round(bp, 2); R.at[i, "driver"] = "model" if mp > bp else "book"
+    s_ = S.loc[r.game_id] if r.game_id in S.index else None
+    if s_ is not None:
+        n = sum(int(float(x)) in HIGH for x in (s_.home_conference_id, s_.away_conference_id) if pd.notna(x))
+        R.at[i, "tier"] = ("high-major", "high vs other", "other")[2 - n]
 cols = ["id", "game_id", "rec_at", "start", "home", "away", "neutral", "early", "hours_to_tip", "market", "side", "line", "price", "book", "ev", "p",
         "units", "off_pinnacle", "timing", "prime", "caution", "model_pm", "model_pt", "injury_adj", "mkt_sp", "mkt_tot", "anchor", "open_sp", "open_tot",
-        "first_seen", "line_age_h", "result", "units_won", "final", "close", "clv", "mv"]
+        "first_seen", "line_age_h", "result", "units_won", "final", "close", "clv", "mv", "model_miss", "model_pts", "book_pts", "driver", "tier"]
 R = R.reindex(columns=cols).sort_values(["start", "id"])
 R.to_csv(f"{REPO}/recs.csv", index=False)
 G = R[R.result.isin(["win", "loss", "push"])]
@@ -100,6 +124,15 @@ card["spread_by_line_age"] = {lab: dict(clvstats(sp[(_age > lo) & (_age <= hi)])
                                         units=round(float(pd.to_numeric(sp[(_age > lo) & (_age <= hi)].units_won).sum()), 2))
                               for lab, lo, hi in (("under 1.5h", -1, 1.5), ("1.5-6h", 1.5, 6), ("6h+", 6, 1e9))}
 card["spread_line_age_known"] = int(_age.notna().sum())
+# spreads by where the edge came from (model vs a book's head start) and by conference tier (Nov 24 2026)
+def _grp(g):
+    return dict(clvstats(g), w=int((g.result == "win").sum()), l=int((g.result == "loss").sum()), units=round(float(pd.to_numeric(g.units_won).sum()), 2),
+                model_pts=round(float(pd.to_numeric(g.model_pts, errors="coerce").mean()), 2) if len(g) else None,
+                book_pts=round(float(pd.to_numeric(g.book_pts, errors="coerce").mean()), 2) if len(g) else None)
+_late = ~sp.early.fillna(True).astype(bool)
+card["spread_by_driver"] = {d: _grp(sp[sp.driver == d]) for d in ("model", "book")}
+card["spread_by_driver_late"] = {d: _grp(sp[(sp.driver == d) & _late]) for d in ("model", "book")}   # both teams 5+ games
+card["spread_by_tier"] = {t: _grp(sp[sp.tier == t]) for t in ("high-major", "high vs other", "other")}
 # compact graded-rec feed for the artifact's Stats tab: one array per graded rec, newest 1500 (keeps the doc well under the size limit)
 # [date(ET), market, side, line, price, units, units_won, result, clv, ev, p, prime, early, hours_to_tip, caution, book, mv]
 def _n(x, d=3):

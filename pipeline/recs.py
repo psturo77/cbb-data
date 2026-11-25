@@ -57,6 +57,7 @@ for gid in set(espn) | set(ug):
                    ev=round(b["ev"], 4), p=round(b["p"], 4), units=round(b["units"], 2), off_pinnacle=b.get("off"),
                    timing=None if tm is None else round(tm, 2), prime=bool(is_prime(gg, b, o)), caution=caution(gg, b, o),
                    model_pm=round(gg["pm"], 2), model_pt=g.get("pt"), injury_adj=j.get("adj") or 0,
+                   model_miss=g.get("pmiss"),
                    mkt_sp=o.get("sp"), mkt_tot=o.get("tot"), mkt_nvh=o.get("nvh"), anchor=o.get("anchor") or ("ESPN" if not mine else "books"),
                    open_sp=(o.get("open") or {}).get("sp"), open_tot=(o.get("open") or {}).get("tot"),
                    # when our own pulls first saw a line for this game (Nov 21 2026): rec_at - first_seen = how long the line had been up.
