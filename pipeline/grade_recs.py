@@ -138,7 +138,7 @@ card["spread_by_driver"] = {d: _grp(sp[sp.driver == d]) for d in ("model", "book
 card["spread_by_driver_late"] = {d: _grp(sp[(sp.driver == d) & _late]) for d in ("model", "book")}   # both teams 5+ games
 card["spread_by_tier"] = {t: _grp(sp[sp.tier == t]) for t in ("high-major", "high vs other", "other")}
 # compact graded-rec feed for the artifact's Stats tab: one array per graded rec, newest 1500 (keeps the doc well under the size limit)
-# [date(ET), market, side, line, price, units, units_won, result, clv, ev, p, prime, early, hours_to_tip, caution, book, mv]
+# [date(ET), market, side, line, price, units, units_won, result, clv, ev, p, prime, early, hours_to_tip, caution, book, mv, team, opp]
 def _n(x, d=3):
     try:
         v = float(x); return None if v != v else round(v, d)
@@ -148,8 +148,11 @@ for _, r in G.sort_values("start").iterrows():
     dt = pd.Timestamp(r.start).tz_convert("America/New_York").strftime("%Y-%m-%d") if pd.notna(r.start) else None
     rows.append([dt, r.market, r.side, _n(r.line, 1), _n(r.price, 0), _n(r.units, 2), _n(r.units_won, 3), r.result, _n(r.clv, 2), _n(r.ev, 3), _n(r.p, 3),
                  int(bool(r.prime)) if pd.notna(r.prime) else 0, int(bool(r.early)) if pd.notna(r.early) else 0, _n(r.hours_to_tip, 1),
-                 1 if pd.notna(r.get("caution")) and r.get("caution") else 0, r.book, _n(r.mv, 2)])
-card["cols"] = ["date", "market", "side", "line", "price", "units", "won", "result", "clv", "ev", "p", "prime", "early", "hrs", "caution", "book", "mv"]
+                 1 if pd.notna(r.get("caution")) and r.get("caution") else 0, r.book, _n(r.mv, 2),
+                 # the team the rec backed and its opponent (Nov 25 2026, for the Stats tab's By school; totals have no team)
+                 (r.home if r.side == "home" else r.away) if r.side in ("home", "away") else None,
+                 (r.away if r.side == "home" else r.home) if r.side in ("home", "away") else None])
+card["cols"] = ["date", "market", "side", "line", "price", "units", "won", "result", "clv", "ev", "p", "prime", "early", "hrs", "caution", "book", "mv", "team", "opp"]
 card["rows"] = rows[-1500:]
 json.dump(card, open(f"{REPO}/scorecard.json", "w"), separators=(",", ":"))
 avg_txt = "-" if st["avg"] is None else f"{st['avg']:+.2f}"; beat_txt = "-" if st["beat"] is None else f"{st['beat']:.0%}"
