@@ -100,6 +100,12 @@ def bets_for(g, o, sdm=11.2, sdt=16.7, books=None):
         if b["market"] == "total" and o.get("tot") is not None: return o["tot"] - b["line"] if b["side"] == "over" else b["line"] - o["tot"]
         return None
     out = [b for b in out if b["market"] in MARKETS and ((off_by(b) is None) or off_by(b) <= (SUS_TOT if b["market"] == "total" else SUS_SP))]
+    # where a spread bet's edge comes from (Nov 24 2026; same as the board's priced): mp = the fair line's lean toward this side vs the
+    # market line, bp = this line's head start over the market, credited up to OFF_FULL. lead = the model's lean is the bigger part.
+    for b in out:
+        if b["market"] == "spread" and o.get("sp") is not None and fm is not None:
+            mp = (fm + o["sp"]) if b["side"] == "home" else -(fm + o["sp"])
+            b["mp"], b["bp"] = round(mp, 3), round(min(off_by(b), OFF_FULL), 3); b["lead"] = mp > b["bp"]
     return sorted(out, key=lambda b: -b["ev"])
 
 # Bad-data guard only (Nov 14 2026, replacing the 1-pt cutoff earlier that day): gaps under this are priced with credited_line, not
@@ -152,9 +158,13 @@ def min_for(g, b, base):
     return max(base, ROAD_MIN) if b["market"] != "total" and not g.get("neutral") and b["side"] == "away" else base
 
 
+# Model-led spreads only (Nov 24 2026): recommend a spread only where the model's lean beats the book's head start (lead). Live ledger,
+# 203 graded spreads: model-led recs - market moved +0.79 pts our way on average (56% of recs; +1.40 / 63% once both teams had 5+
+# games), book-led -0.49 (30%). Same as the board's MODEL_LED.
+MODEL_LED = True
 def top_bets(bets):
     """the best side bet (spread or moneyline) and the best total for a game - the board shows/alerts both"""
-    s = next((b for b in bets if b["market"] != "total"), None); t = next((b for b in bets if b["market"] == "total"), None)
+    s = next((b for b in bets if b["market"] != "total" and (not MODEL_LED or b.get("lead", True))), None); t = next((b for b in bets if b["market"] == "total"), None)
     return [b for b in (s, t) if b]
 
 
