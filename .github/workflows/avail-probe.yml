@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
-      - run: python3 probe/avail_probe.py
+      - run: pip install -q pandas pyarrow && python3 probe/avail_probe.py
       - name: Save to branch avail-probe
         run: |
           cd probe_out
