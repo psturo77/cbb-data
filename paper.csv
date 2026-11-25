@@ -121,8 +121,8 @@ game_id,date,start,recorded,home,away,early,book,market,side,line,price,p,ev,uni
 401921666,2026-11-24,2026-11-24T21:30:00Z,2026-11-24T20:16:22Z,Illinois State Redbirds,Tulsa Golden Hurricane,False,DraftKings,spread,away,-1.5,110.0,0.4964,0.0425,0.48,-0.86,145.3,1.5,143.5,loss,-0.48,1.5,0.0,Tulsa Golden Hurricane 67 @ Illinois State Redbirds 79
 401923271,2026-11-25,2026-11-25T00:00:00Z,2026-11-24T20:16:22Z,Marist Red Foxes,Bryant Bulldogs,False,DraftKings,spread,home,-3.5,-105.0,0.5441,0.0623,0.82,8.17,134.5,-3.5,130.5,loss,-0.82,-2.5,-1.0,Bryant Bulldogs 57 @ Marist Red Foxes 58
 401921184,2026-11-25,2026-11-25T01:00:00Z,2026-11-24T20:16:22Z,Pennsylvania Quakers,Drexel Dragons,False,DraftKings,spread,home,-6.5,-108.0,0.5297,0.0202,0.27,9.61,146.3,-6.5,142.5,win,0.25,-6.5,0.0,Drexel Dragons 74 @ Pennsylvania Quakers 89
-401921702,2026-11-25,2026-11-25T16:00:00Z,2026-11-25T03:37:48Z,Charlotte 49ers,Northern Iowa Panthers,False,DraftKings,spread,home,-6.5,-115.0,0.5684,0.0628,0.9,10.15,147.4,-6.5,144.5,,,,,
-401928831,2026-11-25,2026-11-25T17:30:00Z,2026-11-25T03:37:48Z,Wright State Raiders,Yale Bulldogs,False,DraftKings,spread,away,6.5,-115.0,0.5899,0.1029,1.48,3.93,148.0,-6.5,136.5,,,,,
+401921702,2026-11-25,2026-11-25T16:00:00Z,2026-11-25T03:37:48Z,Charlotte 49ers,Northern Iowa Panthers,False,DraftKings,spread,home,-6.5,-115.0,0.5684,0.0628,0.9,10.15,147.4,-6.5,144.5,win,0.783,-8.5,2.0,Northern Iowa Panthers 72 @ Charlotte 49ers 85
+401928831,2026-11-25,2026-11-25T17:30:00Z,2026-11-25T03:37:48Z,Wright State Raiders,Yale Bulldogs,False,DraftKings,spread,away,6.5,-115.0,0.5899,0.1029,1.48,3.93,148.0,-6.5,136.5,win,1.287,-3.5,3.0,Yale Bulldogs 72 @ Wright State Raiders 70
 401921669,2026-11-25,2026-11-25T19:00:00Z,2026-11-25T03:37:48Z,LSU Tigers,Arizona State Sun Devils,False,DraftKings,spread,home,-3.5,-118.0,0.592,0.0937,1.38,8.71,148.3,-3.5,146.5,,,,,
 401929406,2026-11-25,2026-11-25T19:00:00Z,2026-11-25T03:37:48Z,South Dakota Coyotes,Arkansas-Pine Bluff Golden Lions,False,DraftKings,spread,home,-19.5,-108.0,0.5558,0.0704,0.95,22.83,156.8,-19.5,156.5,,,,,
 401919042,2026-11-25,2026-11-25T20:00:00Z,2026-11-25T03:37:48Z,Oklahoma State Cowboys,Jackson State Tigers,False,DraftKings,spread,away,34.5,-105.0,0.5404,0.055,0.72,31.88,161.6,-34.5,161.5,,,,,
@@ -141,3 +141,6 @@ game_id,date,start,recorded,home,away,early,book,market,side,line,price,p,ev,uni
 401920539,2026-11-27,2026-11-27T02:00:00Z,2026-11-25T14:42:21Z,Alabama Crimson Tide,Kansas State Wildcats,False,DraftKings,spread,home,-13.5,-102.0,0.5701,0.1289,1.5,17.54,169.7,-13.5,172.5,,,,,
 401920531,2026-11-27,2026-11-27T04:30:00Z,2026-11-25T14:42:21Z,Oregon Ducks,Texas Tech Red Raiders,False,DraftKings,spread,away,-8.5,-115.0,0.5677,0.0614,0.88,-11.51,147.9,8.5,153.5,,,,,
 401920540,2026-11-27,2026-11-27T04:30:00Z,2026-11-25T14:42:21Z,Baylor Bears,Gonzaga Bulldogs,False,DraftKings,spread,home,4.5,-112.0,0.585,0.1074,1.5,-0.25,156.3,4.5,160.5,,,,,
+401921672,2026-11-26,2026-11-26T04:59:00Z,2026-11-25T20:11:39Z,Saint Louis Billikens,Stanford Cardinal,False,DraftKings,spread,home,-4.5,-110.0,0.5602,0.0695,0.96,8.72,152.5,-4.5,152.5,,,,,
+401906869,2026-11-26,2026-11-26T19:30:00Z,2026-11-25T20:11:39Z,Texas Longhorns,Georgetown Hoyas,False,DraftKings,spread,home,-8.5,-110.0,0.5632,0.0751,1.03,12.06,155.4,-8.5,155.5,,,,,
+401925757,2026-11-26,2026-11-26T21:30:00Z,2026-11-25T20:11:39Z,Michigan State Spartans,Arkansas Razorbacks,False,DraftKings,spread,away,5.5,-110.0,0.54,0.0309,0.43,4.13,152.3,-5.5,151.5,,,,,
