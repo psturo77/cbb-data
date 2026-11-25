@@ -70,6 +70,10 @@ for i, r in R.iterrows():
 from boardmath import W, CAP, OFF_FULL
 HIGH = {2, 4, 7, 8, 23}
 for c in ("model_pts", "book_pts", "driver", "tier"): R[c] = None
+CONF = {}                                   # team id -> conference id, from any schedule row that has one
+for side in ("home", "away"):
+    if f"{side}_id" in S and f"{side}_conference_id" in S:
+        for t, c in S[[f"{side}_id", f"{side}_conference_id"]].dropna().values: CONF[int(float(t))] = int(float(c))
 for i, r in R.iterrows():
     if r.market != "spread" or pd.isna(r.get("mkt_sp")) or pd.isna(r.get("model_pm")) or pd.isna(r.get("line")): continue
     hrs = float(r.hours_to_tip) if pd.notna(r.get("hours_to_tip")) else 12.0
@@ -83,9 +87,9 @@ for i, r in R.iterrows():
     bp = min(head, OFF_FULL)
     R.at[i, "model_pts"] = round(mp, 2); R.at[i, "book_pts"] = round(bp, 2); R.at[i, "driver"] = "model" if mp > bp else "book"
     s_ = S.loc[r.game_id] if r.game_id in S.index else None
-    if s_ is not None:
-        n = sum(int(float(x)) in HIGH for x in (s_.home_conference_id, s_.away_conference_id) if pd.notna(x))
-        R.at[i, "tier"] = ("high-major", "high vs other", "other")[2 - n]
+    if s_ is not None and CONF and pd.notna(s_.get("home_id")) and pd.notna(s_.get("away_id")):
+        cs = [CONF.get(int(float(s_.home_id))), CONF.get(int(float(s_.away_id)))]
+        if None not in cs: R.at[i, "tier"] = ("other", "high vs other", "high-major")[sum(c in HIGH for c in cs)]
 cols = ["id", "game_id", "rec_at", "start", "home", "away", "neutral", "early", "hours_to_tip", "market", "side", "line", "price", "book", "ev", "p",
         "units", "off_pinnacle", "timing", "prime", "caution", "model_pm", "model_pt", "injury_adj", "mkt_sp", "mkt_tot", "anchor", "open_sp", "open_tot",
         "first_seen", "line_age_h", "result", "units_won", "final", "close", "clv", "mv", "model_miss", "model_pts", "book_pts", "driver", "tier"]

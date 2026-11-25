@@ -10,8 +10,10 @@ import pandas as pd
 SRC, OUT = sys.argv[1], sys.argv[2]
 season = max(int(re.search(r"_(\d{4})\.parquet$", f).group(1)) for f in glob.glob(f"{SRC}/schedules/parquet/mbb_schedule_*.parquet"))
 os.makedirs(f"{OUT}/schedules/parquet", exist_ok=True); os.makedirs(f"{OUT}/player_box/parquet", exist_ok=True)
-s = pd.read_parquet(f"{SRC}/schedules/parquet/mbb_schedule_{season}.parquet",
-                    columns=["game_id", "status_type_completed", "home_id", "home_score", "away_score", "home_display_name", "away_display_name"])
+_f = f"{SRC}/schedules/parquet/mbb_schedule_{season}.parquet"
+_have = set(pd.read_parquet(_f).columns)   # conference ids for grade_recs.py's tier split (Nov 24 2026), when the schedule has them
+s = pd.read_parquet(_f, columns=["game_id", "status_type_completed", "home_id", "home_score", "away_score", "home_display_name", "away_display_name"]
+                    + [c for c in ("away_id", "home_conference_id", "away_conference_id") if c in _have])
 s.to_parquet(f"{OUT}/schedules/parquet/mbb_schedule_{season}.parquet", index=False)
 pb = f"{SRC}/player_box/parquet/player_box_{season}.parquet"
 n = 0
