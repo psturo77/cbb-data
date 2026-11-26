@@ -65,6 +65,7 @@ def sd_for(o, sdm=11.2, sdt=16.7):
 def bets_for(g, o, sdm=11.2, sdt=16.7, books=None):
     """Every bet on offer, best first: at the best prices among your books when o has them (o["opt"], from the
     all-books pull; books = that pull's book names), otherwise at o's single-book prices (ESPN)."""
+    if o.get("gone"): return []          # a line the books took down is not a bet (same as the board)
     sdm, sdt = sd_for(o, sdm, sdt)
     fm, ft, ph = fair(g, o, sdm)
     opt, books = o.get("opt") or {}, books or []
