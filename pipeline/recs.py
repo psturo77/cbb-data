@@ -30,7 +30,9 @@ os.makedirs(OUT, exist_ok=True)
 
 def rec(gid):                      # same rule as the board's oddsRec()
     u, e = ug.get(gid), espn.get(gid)
-    if u and u.get("gone"): u = None        # line no longer offered at your books (oddspull) - same as the board's oddsRec
+    # line no longer offered at your books - same as the board's oddsRec: flagged gone by oddspull, or (docs from before the flag)
+    # a cloud-pull record with no per-book prices, which only carried-over games have
+    if u and (u.get("gone") or (od.get("source") == "cloud" and not u.get("opt"))): u = None
     if not e: return u, bool(u)
     if u and pd.Timestamp(u["seen"]) >= pd.Timestamp(e["seen"]) - pd.Timedelta(hours=6):
         r = dict(u)
