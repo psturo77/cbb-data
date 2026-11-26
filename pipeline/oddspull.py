@@ -63,6 +63,23 @@ def frontier(opts, d):          # best line first (d=+1 higher is better), keep 
     for o in s:
         if payout(o[1]) > bp + 1e-9: out.append(o); bp = payout(o[1])
     return out[:3]
+def flip_open(op):
+    op = dict(op)
+    if op.get("sp") is not None: op["sp"] = -op["sp"]
+    if op.get("nvh") is not None: op["nvh"] = round(1 - op["nvh"], 4)
+    return op
+def looks_flipped(op_sp, sp):
+    """opener and current line on opposite sides, ~same size, far apart as signed numbers: stored the other way round"""
+    return op_sp is not None and sp is not None and op_sp * sp < 0 and abs(op_sp + sp) <= 2 and abs(op_sp - sp) >= 5
+def reorient(op, sh, sp):
+    """ESPN can re-designate a neutral-site game's home team after the opener is saved (Nov 26 2026, Baylor/Gonzaga: open +4.5 kept
+    for Baylor while the line became Gonzaga -3.5). The opener remembers whose home line it is (h) and is flipped when that changes;
+    openers saved before h existed fall back to a size/sign check."""
+    if op.get("h") is not None:
+        if op["h"] != sh: op = flip_open(op)
+    elif looks_flipped(op.get("sp"), sp): op = flip_open(op)
+    op["h"] = sh
+    return op
 def best(a): return max(a, key=lambda x: payout(x[0])) if a else None
 
 books, seen_books, out_games, fresh, unmatched = [], {}, {}, set(), set()
@@ -112,8 +129,8 @@ for ev in raw:
                mid=dict(sp=m_sp, tot=m_tot), anchor="Pinnacle" if "sp" in pin else None,
                opt=dict(sh=frontier(SH, 1), sa=frontier(SA, 1), ov=frontier(OV, -1), un=frontier(UN, 1), mh=best(MH), ma=best(MA)),
                q=dict(sh=SH, sa=SA, ov=OV, un=UN, mh=MH, ma=MA))   # every book's quote, for the board's bet detail (bet math uses opt)
-    p0 = prev.get(g["id"])
-    rec["open"] = p0["open"] if p0 and p0.get("open") else dict(sp=rec["sp"], tot=rec["tot"], nvh=rec["nvh"], seen=seen)
+    p0 = prev.get(g["id"]); sh = a if flip else h       # the schedule's home team for this game, right now
+    rec["open"] = reorient(dict(p0["open"]), sh, rec["sp"]) if p0 and p0.get("open") else dict(sp=rec["sp"], tot=rec["tot"], nvh=rec["nvh"], seen=seen, h=sh)
     out_games[g["id"]] = rec; fresh.add(g["id"]); matched += 1
 cut = now - pd.Timedelta(days=14)
 for gid, r in prev.items():

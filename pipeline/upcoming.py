@@ -89,6 +89,10 @@ for g in todo.itertuples(index=False):
             rec["bpi"] = round(float(st["teampredmov"]) * (1 if same else -1) * (-1 if (int(g.home_id) <= 0 and flip) else 1), 2)
     except RuntimeError:
         pass
+    # ESPN's own opener can sit the other way round from its current line after a home re-designation (Nov 26 2026, Baylor/Gonzaga)
+    osp = rec["open"].get("sp")
+    if osp is not None and rec["sp"] is not None and osp * rec["sp"] < 0 and abs(osp + rec["sp"]) <= 2 and abs(osp - rec["sp"]) >= 5:
+        rec["open"]["sp"] = -osp
     games[gid] = {k: v for k, v in rec.items() if v is not None}
     provider = provider or rec["book"]
     time.sleep(0.1)
