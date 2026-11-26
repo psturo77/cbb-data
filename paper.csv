@@ -133,8 +133,8 @@ game_id,date,start,recorded,home,away,early,book,market,side,line,price,p,ev,uni
 401921703,2026-11-25,2026-11-25T21:00:00Z,2026-11-25T04:16:11Z,Florida Gulf Coast Eagles,Georgia State Panthers,False,DraftKings,spread,home,3.5,-108.0,0.5375,0.0353,0.48,-1.81,147.9,3.5,145.5,win,0.444,1.5,2.0,Georgia State Panthers 72 @ Florida Gulf Coast Eagles 77
 401924705,2026-11-25,2026-11-25T19:00:00Z,2026-11-25T05:36:22Z,Columbia Lions,Saint Peter's Peacocks,False,Draft Kings,spread,home,-14.5,-105.0,0.5241,0.0232,0.3,15.89,129.4,-14.5,125.5,win,0.286,-12.5,-2.0,Saint Peter's Peacocks 44 @ Columbia Lions 65
 401920428,2026-11-25,2026-11-25T17:00:00Z,2026-11-25T08:00:53Z,Marquette Golden Eagles,Virginia Cavaliers,False,DraftKings,spread,home,5.5,-105.0,0.5309,0.0366,0.48,-3.35,153.9,5.5,153.5,loss,-0.48,5.5,0.0,Virginia Cavaliers 60 @ Marquette Golden Eagles 54
-401920550,2026-11-26,2026-11-26T01:30:00Z,2026-11-25T14:42:21Z,UTEP Miners,Eastern Michigan Eagles,False,DraftKings,spread,away,1.5,100.0,0.5294,0.0588,0.73,2.19,133.5,-1.5,132.5,,,,,
-401921713,2026-11-26,2026-11-26T03:00:00Z,2026-11-25T14:42:21Z,VCU Rams,Washington Huskies,False,DraftKings,spread,home,-4.5,-110.0,0.5366,0.0245,0.34,5.85,149.7,-4.5,147.5,,,,,
+401920550,2026-11-26,2026-11-26T01:30:00Z,2026-11-25T14:42:21Z,UTEP Miners,Eastern Michigan Eagles,False,DraftKings,spread,away,1.5,100.0,0.5294,0.0588,0.73,2.19,133.5,-1.5,132.5,loss,-0.73,-1.5,0.0,Eastern Michigan Eagles 54 @ UTEP Miners 72
+401921713,2026-11-26,2026-11-26T03:00:00Z,2026-11-25T14:42:21Z,VCU Rams,Washington Huskies,False,DraftKings,spread,home,-4.5,-110.0,0.5366,0.0245,0.34,5.85,149.7,-4.5,147.5,loss,-0.34,-4.5,0.0,Washington Huskies 78 @ VCU Rams 80
 401920528,2026-11-26,2026-11-26T18:00:00Z,2026-11-25T14:42:21Z,Maryland Terrapins,San Diego State Aztecs,False,DraftKings,spread,home,-1.5,-105.0,0.5543,0.0823,1.08,4.56,151.3,-1.5,153.5,,,,,
 401920529,2026-11-26,2026-11-26T20:30:00Z,2026-11-25T14:42:21Z,Iowa State Cyclones,Tennessee Volunteers,False,DraftKings,spread,home,-1.5,110.0,0.5661,0.1889,1.5,4.47,137.2,-1.5,139.5,,,,,
 401920530,2026-11-27,2026-11-27T02:00:00Z,2026-11-25T14:42:21Z,Louisville Cardinals,St. John's Red Storm,False,DraftKings,spread,home,4.5,-118.0,0.5625,0.0391,0.58,-0.98,162.7,4.5,157.5,,,,,
@@ -148,3 +148,4 @@ game_id,date,start,recorded,home,away,early,book,market,side,line,price,p,ev,uni
 401929282,2026-11-26,2026-11-26T18:30:00Z,2026-11-26T03:36:51Z,UCF Knights,Boston College Eagles,False,Draft Kings,spread,home,-2.5,-105.0,0.5329,0.0405,0.53,4.35,147.1,-2.5,145.5,,,,,
 401921673,2026-11-26,2026-11-26T21:30:00Z,2026-11-26T03:36:51Z,USC Trojans,Utah State Aggies,False,Draft Kings,spread,home,-3.5,-108.0,0.5356,0.0315,0.43,5.5,165.3,-3.5,165.5,,,,,
 401918972,2026-11-27,2026-11-27T00:00:00Z,2026-11-26T03:36:51Z,LSU Tigers,SMU Mustangs,False,Draft Kings,spread,home,-4.5,-115.0,0.5637,0.0538,0.77,8.09,161.5,-4.5,160.5,,,,,
+401909506,2026-11-27,2026-11-27T00:00:00Z,2026-11-26T05:36:51Z,Pittsburgh Panthers,DePaul Blue Demons,False,Draft Kings,spread,away,1.5,-115.0,0.5489,0.0261,0.38,-1.25,138.8,-1.5,138.5,,,,,
