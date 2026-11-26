@@ -118,7 +118,9 @@ for ev in raw:
 cut = now - pd.Timedelta(days=14)
 for gid, r in prev.items():
     if gid not in out_games and r.get("seen") and pd.Timestamp(r["seen"]) > cut:
-        c = dict(r); c.pop("opt", None); c.pop("q", None); out_games[gid] = c
+        # not in this pull: the books took the line down (or haven't re-posted it). Kept 14 days for history, flagged gone so the board,
+        # recs and alerts never price it as a bet (Nov 26 2026: a Washington @ Utah line from Nov 14 showed as a "5 books" bet for days)
+        c = dict(r); c.pop("opt", None); c.pop("q", None); c["gone"] = True; out_games[gid] = c
 doc = dict(loaded=now.strftime("%Y-%m-%dT%H:%M:%SZ"), file="cloud pull", books=books,
            book=books[0] if len(books) == 1 else f"{len(books)} books",
            # keep books seen in earlier pulls too: since Nov 21 the pull asks only for your books + Pinnacle (1 credit instead of 3)

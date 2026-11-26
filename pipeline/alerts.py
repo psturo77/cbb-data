@@ -43,6 +43,7 @@ price = lambda p: f"+{int(p)}" if p > 0 else f"−{abs(int(p))}"
 
 def rec(gid):                      # same rule as the board's oddsRec()
     u, e = ug.get(gid), espn.get(gid)
+    if u and u.get("gone"): u = None        # line no longer offered at your books (oddspull) - same as the board's oddsRec
     if not e: return u, bool(u)
     if u and pd.Timestamp(u["seen"]) >= pd.Timestamp(e["seen"]) - pd.Timedelta(hours=6):
         r = dict(u)
