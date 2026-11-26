@@ -17,6 +17,12 @@ for f in sorted(glob.glob(f"{RECS}/*.json")):
 if not rows:
     print("board recs: none recorded yet", file=sys.stderr); sys.exit(0)
 R = pd.DataFrame(rows); R["game_id"] = R.game_id.astype(str)
+# recs made from a line already 6+ hours old when recorded were never bettable: the books had taken it down and the odds doc
+# still carried it (Nov 26 2026: Washington +3.5 @ Utah from a Nov 14 line, Duke -4.5 v UConn from a Nov 2 line). Not graded.
+_lag = (pd.to_datetime(R.rec_at, utc=True) - pd.to_datetime(R.odds_seen, utc=True)).dt.total_seconds() / 3600 if "odds_seen" in R else pd.Series(0, index=R.index)
+STALE = R[_lag > 6]
+if len(STALE): print(f"board recs: {len(STALE)} made from a taken-down line, not graded: {', '.join(STALE.id)}", file=sys.stderr)
+R = R[~(_lag > 6)].reset_index(drop=True)
 season = max(int(re.search(r"_(\d{4})\.parquet$", f).group(1)) for f in glob.glob(f"{SRC}/schedules/parquet/mbb_schedule_*.parquet"))
 S = pd.read_parquet(f"{SRC}/schedules/parquet/mbb_schedule_{season}.parquet")
 S = S[S.status_type_completed == True].copy(); S["game_id"] = S.game_id.astype(str); S = S.set_index("game_id")
