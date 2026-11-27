@@ -75,7 +75,7 @@ jobs:
             sleep $wait
           done
           # chain: a scheduled-mode run starts the next one itself (GitHub's cron often starts runs 40+ min late or not at all);
-          # it queues behind this run in the odds-pull concurrency group. Stops for the night; the 7 AM cron restarts the chain.
+          # it queues behind this run in the odds-pull concurrency group. Runs all night too (Nov 27 2026); cron + watchdog restart a broken chain.
           hm=$(( 10#$(TZ=America/New_York date +%H) * 60 + 10#$(TZ=America/New_York date +%M) ))
           if [ "$MODE" = "scheduled" ]; then
             gh api -X POST "repos/$REPO/actions/workflows/odds-pull.yml/dispatches" -f ref=main -f "inputs[mode]=scheduled" && echo "next run queued" || echo "could not queue the next run"
