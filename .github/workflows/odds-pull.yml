@@ -39,7 +39,7 @@ permissions:
 jobs:
   pull:
     runs-on: ubuntu-latest
-    timeout-minutes: 62
+    timeout-minutes: 125
     steps:
       - uses: actions/checkout@v5
         with:
@@ -55,6 +55,12 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           pip install -q pandas
+          # Nov 27 2026: a scheduled start between 5 and 7 AM ET waits for 7 AM instead of quitting (GitHub gave only a 6:16 AM
+          # start that day, which quit without queuing the next run, so no odds ran until 10 AM). Before 5 AM it still quits.
+          hm=$(( 10#$(TZ=America/New_York date +%H) * 60 + 10#$(TZ=America/New_York date +%M) ))
+          if [ "$MODE" = "scheduled" ] && [ $hm -ge 300 ] && [ $hm -lt 420 ]; then
+            w=$(( (420 - hm) * 60 - 10#$(date +%S) + 5 )); echo "early start - waiting $((w / 60)) min for 7 AM ET"; sleep $w
+          fi
           start=$(date +%s); i=0
           while :; do
             hm=$(( 10#$(TZ=America/New_York date +%H) * 60 + 10#$(TZ=America/New_York date +%M) ))
