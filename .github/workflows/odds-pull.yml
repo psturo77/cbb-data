@@ -11,7 +11,7 @@ name: CBB odds pull
 # out/alert_log.json from builds newer than the one it last copied - so alerts from a build it never copied are still sent.
 on:
   schedule:
-    - cron: "*/15 0-5,11-23 * 11,12,1,2,3,4 *"
+    - cron: "*/15 0-6,11-23 * 11,12,1,2,3,4 *"
   workflow_dispatch:
     inputs:
       mode:
@@ -64,7 +64,7 @@ jobs:
           start=$(date +%s); i=0
           while :; do
             hm=$(( 10#$(TZ=America/New_York date +%H) * 60 + 10#$(TZ=America/New_York date +%M) ))
-            if [ "$MODE" = "scheduled" ] && [ $hm -lt 420 ]; then echo "outside 7 AM-midnight ET - done"; break; fi
+            if [ "$MODE" = "scheduled" ] && [ $hm -ge 120 ] && [ $hm -lt 420 ]; then echo "outside 7 AM-2 AM ET - done"; break; fi
             i=$((i + 1)); c0=$(date +%s)
             echo "::group::cycle $i ($(TZ=America/New_York date +%H:%M) ET)"
             BUILD="${{ github.run_id }}$(printf %02d $i)" bash pipeline/odds_cycle.sh || echo "cycle $i failed"
@@ -83,6 +83,7 @@ jobs:
           # chain: a scheduled-mode run starts the next one itself (GitHub's cron often starts runs 40+ min late or not at all);
           # it queues behind this run in the odds-pull concurrency group. Stops for the night; the 7 AM cron restarts the chain.
           hm=$(( 10#$(TZ=America/New_York date +%H) * 60 + 10#$(TZ=America/New_York date +%M) ))
-          if [ "$MODE" = "scheduled" ] && [ $hm -ge 420 ] && [ $hm -lt 1430 ]; then
+          # Nov 27 2026: runs on to 2 AM ET (was midnight) so late West Coast finals reach board/scores the same night.
+          if [ "$MODE" = "scheduled" ] && { [ $hm -ge 420 ] || [ $hm -lt 110 ]; }; then
             gh api -X POST "repos/$REPO/actions/workflows/odds-pull.yml/dispatches" -f ref=main -f "inputs[mode]=scheduled" && echo "next run queued" || echo "could not queue the next run"
           fi
