@@ -1,0 +1,32 @@
+name: CBB odds watchdog
+# Nov 27 2026: GitHub drops many scheduled starts. On Nov 27 the odds loop's only morning start came at 6:16 AM ET, quit
+# (before 7 AM) and nothing ran until 10:12 AM - no odds, no ntfy alerts. This checks three times an hour, 7 AM-11:30 PM ET,
+# and if no "CBB odds pull" run is running or queued it starts one in scheduled mode (which then chains itself).
+on:
+  schedule:
+    - cron: "8,28,48 0-4,12-23 * 11,12,1,2,3,4 *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Restart the odds loop if it stopped
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          hm=$(( 10#$(TZ=America/New_York date +%H) * 60 + 10#$(TZ=America/New_York date +%M) ))
+          if [ $hm -lt 420 ] || [ $hm -ge 1410 ]; then echo "outside 7 AM-11:30 PM ET - nothing to do"; exit 0; fi
+          active=0
+          for s in in_progress queued pending waiting requested; do
+            n=$(gh api "repos/$REPO/actions/workflows/odds-pull.yml/runs?status=$s&per_page=5" --jq '.total_count')
+            active=$(( active + n ))
+          done
+          if [ $active -gt 0 ]; then echo "odds loop is running ($active active/queued) - ok"; exit 0; fi
+          gh api -X POST "repos/$REPO/actions/workflows/odds-pull.yml/dispatches" -f ref=main -f "inputs[mode]=scheduled"
+          echo "odds loop was stopped - restarted it"
