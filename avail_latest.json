@@ -1,0 +1,41 @@
+{
+ "updated": "2026-11-28T14:06:35Z",
+ "confs": {
+  "A10": {
+   "n": 0,
+   "next": null,
+   "rows": []
+  },
+  "ACC": {
+   "n": 0,
+   "next": null,
+   "rows": []
+  },
+  "B10": {
+   "n": 0,
+   "next": "2026-11-30",
+   "rows": []
+  },
+  "B12": {
+   "n": 0,
+   "next": null,
+   "rows": []
+  },
+  "BE": {
+   "n": 0,
+   "next": null,
+   "rows": []
+  },
+  "MVC": {
+   "n": 0,
+   "next": "2026-12-01",
+   "rows": []
+  },
+  "SEC": {
+   "n": 0,
+   "next": null,
+   "rows": []
+  }
+ },
+ "notes": []
+}
