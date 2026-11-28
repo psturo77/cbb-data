@@ -1,0 +1,166 @@
+{
+ "writes": [
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-01",
+   "file_path": "files/slate__d2026-12-01.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-02",
+   "file_path": "files/slate__d2026-12-02.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-03",
+   "file_path": "files/slate__d2026-12-03.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-04",
+   "file_path": "files/slate__d2026-12-04.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-05",
+   "file_path": "files/slate__d2026-12-05.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-06",
+   "file_path": "files/slate__d2026-12-06.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-07",
+   "file_path": "files/slate__d2026-12-07.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-08",
+   "file_path": "files/slate__d2026-12-08.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-09",
+   "file_path": "files/slate__d2026-12-09.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-10",
+   "file_path": "files/slate__d2026-12-10.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-11",
+   "file_path": "files/slate__d2026-12-11.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-12",
+   "file_path": "files/slate__d2026-12-12.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-13",
+   "file_path": "files/slate__d2026-12-13.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-14",
+   "file_path": "files/slate__d2026-12-14.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-15",
+   "file_path": "files/slate__d2026-12-15.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-16",
+   "file_path": "files/slate__d2026-12-16.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-17",
+   "file_path": "files/slate__d2026-12-17.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-18",
+   "file_path": "files/slate__d2026-12-18.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-19",
+   "file_path": "files/slate__d2026-12-19.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-20",
+   "file_path": "files/slate__d2026-12-20.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-21",
+   "file_path": "files/slate__d2026-12-21.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-22",
+   "file_path": "files/slate__d2026-12-22.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-23",
+   "file_path": "files/slate__d2026-12-23.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-24",
+   "file_path": "files/slate__d2026-12-24.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-25",
+   "file_path": "files/slate__d2026-12-25.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-12-26",
+   "file_path": "files/slate__d2026-12-26.json"
+  },
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "runlog",
+   "file_path": "files/board__runlog.json"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+espn_schedule: 10 game(s) listed home/away the other way round by ESPN - scores matched to hoopR's teams
+espn_schedule: ESPN lists 2012 games 14 days back to 28 ahead (1253 upcoming); hoopR had 2012; added 0, 2073 start-time/status/score updates; mbb_schedule_2027.parquet now 6076 games
+espn_schedule: ratings coverage, last 3 days: 85 of 138 Division I finals have hoopR box scores - MISSING 53: Oakland Golden Grizzlies at Houston Cougars; Virginia Cavaliers at Xavier Musketeers; Western Kentucky Hilltoppers at Illinois Fighting Illini; San Diego State Aztecs at Texas Tech Red Raiders; Georgetown Hoyas at UCLA Bruins; Texas Longhorns at Saint Mary's Gaels
+Games through 2026-11-26; 23642 training games, 163 this season
+Ratings: 2026-27 through 2026-11-26; HCA 1.73-5.80
+Spread model: rating coef 1.003, missing-players coef -0.113, sigma_margin 11.20
+Closing lines saved: 50 new; upcoming games with ESPN lines: 63; teams with Miss > 0: 88
+players: 646 teams, 4114 players (379 teams from this season); coef -0.113; 192 KB
+props_proj: 1302 player projections for 125 games (2026-11-28 - 2026-11-29); 88 KB
+Today's slate: 76 games
+board recs: 2 made from a taken-down line, not graded: 401909568-s, 401921760-s
+board recs: 376 recorded, 361 graded: 186-171, ROI -0.2%, market moved our way 38% (spread 137-116, ROI +0.8%, market moved our way 42%; total 43-54, ROI -14.0%, market moved our way 28%; ml 6-1, ROI +125.0%; PRIME 24-27, ROI -6.9%, market moved our way 54%)
+props: 713 recorded, 604 graded | lean 0-1.5: 325 props, right 53%, flat ROI -1.3%; lean 1.5-3: 190 props, right 57%, flat ROI +5.6%; lean 3-99: 89 props, right 57%, flat ROI +2.4%
+Board updated.

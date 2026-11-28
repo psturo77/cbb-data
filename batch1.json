@@ -1,0 +1,106 @@
+{
+ "writes": [
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "meta",
+   "file_path": "files/board__meta.json"
+  },
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "teams",
+   "file_path": "files/board__teams.json"
+  },
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "espn",
+   "file_path": "files/board__espn.json"
+  },
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "players",
+   "file_path": "files/board__players.json"
+  },
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "props",
+   "file_path": "files/board__props.json"
+  },
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "forecast",
+   "file_path": "files/board__forecast.json"
+  },
+  {
+   "op": "set",
+   "collection": "board",
+   "doc_id": "scorecard",
+   "file_path": "files/board__scorecard.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-21",
+   "file_path": "files/slate__d2026-11-21.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-22",
+   "file_path": "files/slate__d2026-11-22.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-23",
+   "file_path": "files/slate__d2026-11-23.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-24",
+   "file_path": "files/slate__d2026-11-24.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-25",
+   "file_path": "files/slate__d2026-11-25.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-26",
+   "file_path": "files/slate__d2026-11-26.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-27",
+   "file_path": "files/slate__d2026-11-27.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-28",
+   "file_path": "files/slate__d2026-11-28.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-29",
+   "file_path": "files/slate__d2026-11-29.json"
+  },
+  {
+   "op": "set",
+   "collection": "slate",
+   "doc_id": "d2026-11-30",
+   "file_path": "files/slate__d2026-11-30.json"
+  }
+ ]
+}
